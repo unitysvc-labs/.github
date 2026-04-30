@@ -34,9 +34,10 @@ Private (in-development) providers are tracked but not listed here.
 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 7 rejected | 7 unlisted | 7 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 rejected | 3 unlisted | 1 regular · 2 byok | ✅ | — |
 | [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | content, email, llm, proxy | 13 active · 2 rejected | 13 published · 2 unlisted | 8 regular · 6 byok · 1 byoe | ✅ | — |
+| **Total** (17 repos) | — | — | 74 active · 1 deprecated · 203 rejected · 55 rejected revisions | 74 published · 204 unlisted | 23 regular · 254 byok · 1 byoe | — | 5 |
 <!-- providers-end -->
 
-_Last synced: 2026-04-30 18:49 UTC_
+_Last synced: 2026-04-30 18:55 UTC_
 
 ### Column legend
 
