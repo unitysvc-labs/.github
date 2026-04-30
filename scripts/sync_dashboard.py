@@ -613,6 +613,15 @@ def _listing_type_cell(counts: dict[str, int]) -> str:
     )
 
 
+def _sum_counts(dicts: list[dict[str, int]]) -> dict[str, int]:
+    """Element-wise sum of a list of count dicts."""
+    total: dict[str, int] = {}
+    for d in dicts:
+        for k, v in d.items():
+            total[k] = total.get(k, 0) + v
+    return total
+
+
 def render_readme_table(rows: list[ProviderRow]) -> str:
     """Public-only summary table for the org README.
 
@@ -625,6 +634,7 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
         "| Provider | Repo | Type | Lifecycle | Visibility | Listing type | Validate | Open PRs |",
         "|---|---|---|---|---|---|---|---|",
     ]
+
     for r in public_rows:
         repo_link = f"[`{r.repo}`](https://github.com/{ORG}/{r.repo})"
         provider_link = (
@@ -649,6 +659,32 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
             )
             + " |"
         )
+
+    # Totals row at the bottom — sums every count-based cell across
+    # the rendered rows so operators get a one-glance org-wide view
+    # without eyeballing the column.  Type / Validate don't aggregate
+    # cleanly (set union and per-repo signal respectively); ``—``.
+    total_lifecycle = _sum_counts([r.lifecycle_counts for r in public_rows])
+    total_visibility = _sum_counts([r.visibility_counts for r in public_rows])
+    total_listing_type = _sum_counts([r.listing_type_counts for r in public_rows])
+    total_open_prs = sum(r.open_pr_count for r in public_rows)
+    lines.append(
+        "| "
+        + " | ".join(
+            [
+                f"**Total** ({len(public_rows)} repos)",
+                "—",
+                "—",
+                _lifecycle_cell(total_lifecycle),
+                _visibility_cell(total_visibility),
+                _listing_type_cell(total_listing_type),
+                "—",
+                str(total_open_prs) if total_open_prs else "—",
+            ]
+        )
+        + " |"
+    )
+
     return "\n".join(lines)
 
 
