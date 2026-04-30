@@ -296,10 +296,30 @@ def fetch_service_breakdown(
             text=True,
             check=False,
         )
-        if result.returncode != 0:
-            return {}, {}, {}
-        services = json.loads(result.stdout)
-    except (json.JSONDecodeError, FileNotFoundError):
+    except FileNotFoundError as exc:
+        print(f"  ⚠ {provider_name}: usvc_seller not on PATH ({exc})")
+        return {}, {}, {}
+
+    if result.returncode != 0:
+        print(
+            f"  ⚠ {provider_name}: usvc_seller exit {result.returncode}; "
+            f"stderr={result.stderr.strip()[:300]!r}"
+        )
+        return {}, {}, {}
+
+    # The CLI prints ``No services found`` (plain text) when the
+    # filter matches nothing — that's a legitimate empty result, not
+    # a parse error.  Anything else that doesn't decode is loud.
+    raw = result.stdout.strip()
+    if not raw or raw.startswith("No services found"):
+        return {}, {}, {}
+    try:
+        services = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        print(
+            f"  ⚠ {provider_name}: JSON decode failed ({exc}); "
+            f"first 300 chars of stdout: {raw[:300]!r}"
+        )
         return {}, {}, {}
 
     lifecycle: dict[str, int] = {}
