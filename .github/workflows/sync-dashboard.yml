@@ -45,7 +45,11 @@ jobs:
           # When the secret is unset the script still runs but cross-
           # repo reads / writes degrade silently to "—" / no-op.
           GH_TOKEN: ${{ secrets.LABS_DASHBOARD_TOKEN || secrets.GITHUB_TOKEN }}
+          # ``--base-url`` is read from this env var by ``usvc_seller``
+          # so we don't have to plumb it through the script.  Unset →
+          # defaults to seller.unitysvc.com prod.
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_API_KEY }}
+          UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_API_URL }}
         run: |
           python scripts/sync_dashboard.py
 
