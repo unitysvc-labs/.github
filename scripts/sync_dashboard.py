@@ -443,7 +443,18 @@ def fetch_service_breakdown(
         return {}, {}, {}, []
 
     ids = fetch_repo_service_ids(repo)
+    # Override files only carry the parent service's ID.  Revisions are
+    # separate rows in the SDK with their own IDs and ``revision_of``
+    # pointing back at the parent, so they wouldn't be picked up by a
+    # plain ID intersection.  Pull them in by following ``revision_of``
+    # to any matched parent — that's how the lifecycle column gets
+    # "3 active · 6 rejected revisions" instead of just "3 active".
     services = [_services_by_id[i] for i in ids if i in _services_by_id]
+    services += [
+        svc
+        for svc in _services_by_id.values()
+        if str(svc.get("revision_of") or "") in ids
+    ]
     return _breakdown_for_services(services)
 
 
