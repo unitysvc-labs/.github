@@ -41,17 +41,25 @@ _Last synced: 2026-04-30 15:39 UTC_
 
 ### Column legend
 
-- **Status** — pulled from the tracking issue's `status: …` label.
-  🟢 finalized · 🔵 negotiating / discussion · 🟡 pending / awaiting-response ·
-  🟠 legal-review · ⚪ on-hold · 🔴 rejected
-- **Type** — `type: …` labels (`llm`, `embedding`, `image`, `audio`, `video`, `multimodal`)
-- **Reselling** — `reselling: …` label
-- **Active** — count of services in `active` status, queried from the gateway via
-  `usvc_seller services list --provider <name> --status active`
-- **Validate** — most recent CI run conclusion on `main` (✅ success · ❌ failure ·
-  🟡 in-progress · ⚪ no-runs / cancelled)
-- **Open PRs** — open pull requests on the repo (auto-update PRs from
-  `populate-services.yml` count too — that's the signal a refresh is waiting)
+- **Type** — `type: …` labels on the tracking issue (`llm`, `embedding`,
+  `image`, `audio`, `video`, `multimodal`).  Labels are platform-coarse;
+  per-service `service_type` lives on each `Service` record.
+- **Lifecycle** — service-status counts from the gateway, summed across
+  every service the provider owns: `active`, `draft`, `review`,
+  `deprecated` (and `pending` / `rejected` / `suspended` when present).
+- **Visibility** — catalog-visibility counts: `published` (= `public`)
+  and `unlisted`.  Private services are tracked but not shown on this
+  public README.
+- **Mode** — enrollment-mode counts: `managed` (seller provides upstream
+  credentials), `byok` (customer supplies API key), `byoe` (customer
+  supplies endpoint + key).  *Currently unpopulated — see
+  `fetch_mode_counts` in `scripts/sync_dashboard.py` for the open
+  question on how to derive it.*
+- **Validate** — most recent CI run conclusion on `main`: ✅ success ·
+  ❌ failure · 🟡 in-progress · ⚪ no-runs / cancelled.
+- **Open PRs** — open pull requests on the repo.  Auto-update PRs from
+  `populate-services.yml` count too — that's the signal a refresh is
+  waiting on a human.
 
 ## Adding a new provider
 
@@ -63,5 +71,6 @@ _Last synced: 2026-04-30 15:39 UTC_
    with the provider's display name as the title.  Include
    `Repo: [\`unitysvc-services-<name>\`](https://github.com/unitysvc-labs/unitysvc-services-<name>)`
    in the body so the dashboard sync can map issue → repo.
-3. Apply at least one `status: …` label.  The next dashboard sync (or a
+3. Apply any `type: …` labels (drives the **Type** column).  The next
+   dashboard sync (or a
    `workflow_dispatch` of `sync-dashboard.yml`) picks it up.

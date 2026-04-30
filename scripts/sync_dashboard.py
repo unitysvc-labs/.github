@@ -85,12 +85,16 @@ class ProviderRow:
     is_archived: bool
     issue_number: int | None
     issue_title: str  # human-readable provider name (e.g. "Anthropic")
-    status_label: str | None  # e.g. "finalized" (without "status: " prefix)
-    type_labels: list[str]  # e.g. ["llm", "image"]
-    reselling_label: str | None  # e.g. "allowed"
+    type_labels: list[str]  # e.g. ["llm", "image"] from the tracking issue
     ci_conclusion: str | None  # "success" / "failure" / "in_progress" / None
     open_pr_count: int
-    active_services: int | None  # None when seller API not configured
+    # Service-level signals from ``usvc_seller services list``.  Populated
+    # when ``UNITYSVC_SELLER_API_KEY`` is set; empty dicts otherwise (cells
+    # render as ``—``).  Counts are by enum value.  Unknown / extra keys
+    # pass through so future enum values automatically appear in the table.
+    lifecycle_counts: dict[str, int]  # by ServiceStatusEnum value
+    visibility_counts: dict[str, int]  # by ServiceVisibilityEnum value
+    mode_counts: dict[str, int]  # by enrollment mode (TODO: see fetch_mode_counts)
 
 
 def gh(*args: str) -> str:
@@ -248,17 +252,34 @@ def fetch_open_pr_count(repo: str) -> int:
     return len(json.loads(out))
 
 
-def fetch_active_services(provider_name: str) -> int | None:
-    """Active-services count via ``usvc_seller services list``.
+def fetch_service_breakdown(
+    provider_name: str,
+) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
+    """Lifecycle / visibility / mode counts via ``usvc_seller services list``.
 
-    Returns ``None`` when ``UNITYSVC_SELLER_API_KEY`` is unset (the
-    column renders as ``—``) — keeps the dashboard usable in degraded
-    mode while the seller key is being provisioned.
+    One paginated call per provider — ``--all`` follows cursors so the
+    counts cover the whole catalog, not just the first page.  Returns
+    three dicts:
+
+    1. ``lifecycle`` keyed by :class:`ServiceStatusEnum` values
+       (``active``, ``draft``, ``review``, ``deprecated``, ``pending``,
+       ``rejected``, ``suspended``).
+    2. ``visibility`` keyed by :class:`ServiceVisibilityEnum` values
+       (``public``, ``unlisted``, ``private``).  ``public`` is rendered
+       as "published" in the README to match operator vocabulary.
+    3. ``mode`` keyed by enrollment mode (``managed``, ``byok``,
+       ``byoe``).  **Currently always empty** — see
+       ``fetch_mode_counts`` TODO below.
+
+    All three default to ``{}`` when the seller API isn't reachable
+    (no key, CLI missing, network error) so the rest of the dashboard
+    stays usable.
     """
     if not os.environ.get("UNITYSVC_SELLER_API_KEY"):
-        return None
+        return {}, {}, {}
     if shutil.which("usvc_seller") is None:
-        return None
+        return {}, {}, {}
+
     try:
         result = subprocess.run(
             [
@@ -267,8 +288,6 @@ def fetch_active_services(provider_name: str) -> int | None:
                 "list",
                 "--provider",
                 provider_name,
-                "--status",
-                "active",
                 "--all",
                 "--format",
                 "json",
@@ -278,10 +297,54 @@ def fetch_active_services(provider_name: str) -> int | None:
             check=False,
         )
         if result.returncode != 0:
-            return None
-        return len(json.loads(result.stdout))
+            return {}, {}, {}
+        services = json.loads(result.stdout)
     except (json.JSONDecodeError, FileNotFoundError):
-        return None
+        return {}, {}, {}
+
+    lifecycle: dict[str, int] = {}
+    visibility: dict[str, int] = {}
+    for svc in services:
+        status = svc.get("status")
+        if status:
+            lifecycle[status] = lifecycle.get(status, 0) + 1
+        vis = svc.get("visibility")
+        if vis:
+            visibility[vis] = visibility.get(vis, 0) + 1
+
+    mode = fetch_mode_counts(provider_name, services)
+    return lifecycle, visibility, mode
+
+
+def fetch_mode_counts(
+    provider_name: str, services: list[dict[str, Any]]
+) -> dict[str, int]:
+    """Counts by enrollment mode (managed / byok / byoe).
+
+    TODO(post-merge): ``ServicePublic`` doesn't surface enrollment mode
+    today.  Mode is encoded in the *offering's* ``upstream_access_config``:
+
+    - all fields use ``${ secrets.X }`` → **managed**
+    - ``api_key`` uses ``${ customer_secrets.X }``, others ``${ secrets.X }`` → **byok**
+    - ``base_url`` (or ``host``) uses ``${ customer_secrets.X }`` → **byoe**
+
+    Computing this on the dashboard requires either:
+
+    1. **An N+1 detail fetch per service** (~50–100 calls per cron
+       run, fine but wasteful) — use ``client.services.get(id)`` and
+       inspect ``offering.upstream_access_config``.
+    2. **A new SDK / list-endpoint field** that returns the derived
+       mode alongside ``status`` / ``visibility``.  Cleaner; needs
+       backend change.
+    3. **Local repo inspection**: clone each ``unitysvc-services-*``
+       repo, walk its data tree, parse offerings.  Heavier but no
+       extra API surface.
+
+    For now this returns ``{}`` so the column renders as ``—``.  See
+    the dashboard PR discussion for which path you want.
+    """
+    del provider_name, services  # unused until one of the paths above lands
+    return {}
 
 
 def repo_to_provider_name(repo: str, issue_title: str) -> str:
@@ -310,6 +373,16 @@ def collect() -> list[ProviderRow]:
         issue = repo_to_issue.get(repo_name)
         labels = (issue or {}).get("labels", [])
 
+        # Skip the seller-API call entirely for archived repos — they
+        # don't have live services on the gateway, and the call would
+        # just waste a round-trip returning an empty list.
+        if r["isArchived"]:
+            lifecycle, visibility, mode = {}, {}, {}
+        else:
+            lifecycle, visibility, mode = fetch_service_breakdown(
+                repo_to_provider_name(repo_name, "")
+            )
+
         rows.append(
             ProviderRow(
                 repo=repo_name,
@@ -317,12 +390,12 @@ def collect() -> list[ProviderRow]:
                 is_archived=r["isArchived"],
                 issue_number=(issue or {}).get("number"),
                 issue_title=(issue or {}).get("title") or repo_name[len(REPO_PREFIX) :],
-                status_label=label_value(labels, "status"),
                 type_labels=label_values(labels, "type"),
-                reselling_label=label_value(labels, "reselling"),
                 ci_conclusion=fetch_ci_conclusion(repo_name) if not r["isArchived"] else None,
                 open_pr_count=fetch_open_pr_count(repo_name) if not r["isArchived"] else 0,
-                active_services=fetch_active_services(repo_to_provider_name(repo_name, "")),
+                lifecycle_counts=lifecycle,
+                visibility_counts=visibility,
+                mode_counts=mode,
             )
         )
 
@@ -336,17 +409,6 @@ def collect() -> list[ProviderRow]:
 # ---------------------------------------------------------------------------
 
 
-_STATUS_EMOJI = {
-    "finalized": "🟢",
-    "active-negotiation": "🔵",
-    "discussion": "🔵",
-    "pending-review": "🟡",
-    "awaiting-response": "🟡",
-    "legal-review": "🟠",
-    "on-hold": "⚪",
-    "rejected": "🔴",
-}
-
 _CI_EMOJI = {
     "success": "✅",
     "failure": "❌",
@@ -356,11 +418,19 @@ _CI_EMOJI = {
     "skipped": "⚪",
 }
 
+# README maps ``public`` → ``published`` to match operator vocabulary
+# (the user said "published / unlisted").  ``private`` is excluded
+# from rendering — the public org README never lists private services.
+_VISIBILITY_DISPLAY = {
+    "public": "published",
+    "unlisted": "unlisted",
+    # ``private`` intentionally absent — filtered out at render time.
+}
 
-def _status_cell(status: str | None) -> str:
-    if not status:
-        return "—"
-    return f"{_STATUS_EMOJI.get(status, '⚪')} {status}"
+# Lifecycle states the user explicitly asked to see, in operator
+# priority order (most-actionable first).  Other states (pending,
+# rejected, suspended) get appended after these when present.
+_LIFECYCLE_PRIMARY = ["active", "draft", "review", "deprecated"]
 
 
 def _ci_cell(conclusion: str | None) -> str:
@@ -369,12 +439,58 @@ def _ci_cell(conclusion: str | None) -> str:
     return _CI_EMOJI.get(conclusion, "⚪")
 
 
-def _services_cell(count: int | None) -> str:
-    return "—" if count is None else str(count)
-
-
 def _pr_cell(count: int) -> str:
     return "—" if count == 0 else str(count)
+
+
+def _counts_cell(
+    counts: dict[str, int],
+    *,
+    primary_order: list[str] | None = None,
+    display_map: dict[str, str] | None = None,
+    omit_keys: set[str] | None = None,
+) -> str:
+    """Render a ``{name: count}`` dict as ``"3 active · 1 review"``.
+
+    - ``primary_order`` lists keys to render first (ones the user cares
+      about most); the rest are sorted alphabetically and appended.
+    - ``display_map`` overrides the rendered name (e.g. ``public`` →
+      ``published``).  Missing keys render as-is.
+    - ``omit_keys`` drops keys entirely (used to filter out
+      ``private`` from the public README's visibility column).
+    - Zero counts are not rendered.  Empty dict / all-zero → ``—``.
+    """
+    omit = omit_keys or set()
+    filtered = {k: v for k, v in counts.items() if v > 0 and k not in omit}
+    if not filtered:
+        return "—"
+
+    primary = primary_order or []
+    ordered_keys = [k for k in primary if k in filtered] + sorted(
+        k for k in filtered if k not in primary
+    )
+
+    parts = [f"{filtered[k]} {(display_map or {}).get(k, k)}" for k in ordered_keys]
+    return " · ".join(parts)
+
+
+def _lifecycle_cell(counts: dict[str, int]) -> str:
+    return _counts_cell(counts, primary_order=_LIFECYCLE_PRIMARY)
+
+
+def _visibility_cell(counts: dict[str, int]) -> str:
+    # Drop ``private`` from public README / sticky comments — irrelevant
+    # to the operator who looks at the public catalog.
+    return _counts_cell(
+        counts,
+        primary_order=["public", "unlisted"],
+        display_map=_VISIBILITY_DISPLAY,
+        omit_keys={"private"},
+    )
+
+
+def _mode_cell(counts: dict[str, int]) -> str:
+    return _counts_cell(counts, primary_order=["managed", "byok", "byoe"])
 
 
 def render_readme_table(rows: list[ProviderRow]) -> str:
@@ -386,7 +502,7 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
     public_rows = [r for r in rows if r.is_public and not r.is_archived]
 
     lines = [
-        "| Provider | Repo | Status | Type | Reselling | Active | Validate | Open PRs |",
+        "| Provider | Repo | Type | Lifecycle | Visibility | Mode | Validate | Open PRs |",
         "|---|---|---|---|---|---|---|---|",
     ]
     for r in public_rows:
@@ -397,17 +513,16 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
             else r.issue_title
         )
         type_cell = ", ".join(r.type_labels) if r.type_labels else "—"
-        reselling_cell = r.reselling_label or "—"
         lines.append(
             "| "
             + " | ".join(
                 [
                     provider_link,
                     repo_link,
-                    _status_cell(r.status_label),
                     type_cell,
-                    reselling_cell,
-                    _services_cell(r.active_services),
+                    _lifecycle_cell(r.lifecycle_counts),
+                    _visibility_cell(r.visibility_counts),
+                    _mode_cell(r.mode_counts),
                     _ci_cell(r.ci_conclusion),
                     _pr_cell(r.open_pr_count),
                 ]
@@ -421,19 +536,26 @@ def render_issue_comment(row: ProviderRow, timestamp: str) -> str:
     """Sticky-comment body for one tracking issue.
 
     Includes the marker as the first line so reruns can locate-and-edit
-    instead of accumulating new comments.
+    instead of accumulating new comments.  Unlike the README, sticky
+    comments include private repos (the issue tracker is private), so
+    the visibility cell here doesn't filter ``private``.
     """
     type_cell = ", ".join(row.type_labels) if row.type_labels else "—"
+    visibility_cell = _counts_cell(
+        row.visibility_counts,
+        primary_order=["public", "unlisted", "private"],
+        display_map=_VISIBILITY_DISPLAY,
+    )
     return (
         f"{COMMENT_MARKER}\n"
         f"**Provider status snapshot** _(auto-synced {timestamp} UTC)_\n\n"
         f"- Repo: [`{row.repo}`](https://github.com/{ORG}/{row.repo})"
         f" — {'public' if row.is_public else 'private'}"
         f"{' · archived' if row.is_archived else ''}\n"
-        f"- Status: {_status_cell(row.status_label)}\n"
         f"- Type: {type_cell}\n"
-        f"- Reselling: {row.reselling_label or '—'}\n"
-        f"- Active services (gateway): {_services_cell(row.active_services)}\n"
+        f"- Lifecycle: {_lifecycle_cell(row.lifecycle_counts)}\n"
+        f"- Visibility: {visibility_cell}\n"
+        f"- Mode: {_mode_cell(row.mode_counts)}\n"
         f"- Last CI: {_ci_cell(row.ci_conclusion)}\n"
         f"- Open PRs: {_pr_cell(row.open_pr_count)}\n"
     )
