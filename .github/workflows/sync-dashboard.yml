@@ -29,10 +29,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install seller SDK (optional — skipped if secret unset)
-        if: ${{ env.UNITYSVC_SELLER_API_KEY != '' }}
-        env:
-          UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_API_KEY }}
+      - name: Install seller SDK
+        # Always install — the dashboard imports ``AsyncClient`` from
+        # ``unitysvc_sellers`` directly.  When ``UNITYSVC_SELLER_API_KEY``
+        # is unset the script still runs (the seller-data columns just
+        # render as ``—``); but the import has to succeed.
         run: |
           python -m pip install --quiet unitysvc-sellers
 

@@ -55,10 +55,10 @@ reruns edit the same comment.
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import os
 import re
-import shutil
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -252,75 +252,104 @@ def fetch_open_pr_count(repo: str) -> int:
     return len(json.loads(out))
 
 
+async def _list_services_for_provider(
+    client: Any, provider_name: str
+) -> list[dict[str, Any]]:
+    """Pull every service for a provider via the SDK, paging cursors.
+
+    Mirrors the seller CLI's ``services list --provider <name> --all``
+    behaviour: server-side pagination via cursor, client-side filter
+    on ``provider_name`` (case-insensitive substring) since the
+    backend list endpoint doesn't take a provider filter.
+    """
+    needle = provider_name.lower()
+    collected: list[dict[str, Any]] = []
+    cursor: str | None = None
+    while True:
+        page = await client.services.list(cursor=cursor, limit=200)
+        for svc in page.data:
+            svc_dict = svc.to_dict() if hasattr(svc, "to_dict") else dict(svc)
+            if needle in (svc_dict.get("provider_name") or "").lower():
+                collected.append(svc_dict)
+        if not getattr(page, "has_more", False):
+            break
+        next_cursor = getattr(page, "next_cursor", None)
+        if not next_cursor or not isinstance(next_cursor, str):
+            break
+        cursor = next_cursor
+    return collected
+
+
+_services_cache: dict[str, list[dict[str, Any]]] | None = None
+
+
+def _populate_services_cache() -> dict[str, list[dict[str, Any]]] | None:
+    """Fetch every service once, then group by provider name.
+
+    The seller list endpoint returns *all* services the API key owns
+    on each call — there's no per-provider filter server-side.  Doing
+    one call per provider would refetch the same N rows N times.
+    Instead, fetch once, group by ``provider_name``, and look up
+    per-provider from the in-memory map.
+    """
+    api_key = os.environ.get("UNITYSVC_SELLER_API_KEY")
+    if not api_key:
+        return None
+
+    try:
+        from unitysvc_sellers import AsyncClient
+    except ImportError as exc:
+        print(f"  ⚠ unitysvc_sellers SDK not installed ({exc}); skipping seller data")
+        return None
+
+    base_url = os.environ.get("UNITYSVC_SELLER_API_URL")
+
+    async def _fetch_all() -> list[dict[str, Any]]:
+        async with AsyncClient(api_key=api_key, base_url=base_url) as client:
+            return await _list_services_for_provider(client, "")  # empty filter → all
+
+    try:
+        all_services = asyncio.run(_fetch_all())
+    except Exception as exc:  # noqa: BLE001 — surface the cause and degrade gracefully
+        print(f"  ⚠ Seller SDK call failed ({type(exc).__name__}: {exc}); skipping")
+        return None
+
+    grouped: dict[str, list[dict[str, Any]]] = {}
+    for svc in all_services:
+        key = (svc.get("provider_name") or "").lower()
+        grouped.setdefault(key, []).append(svc)
+    print(f"  ✓ Seller SDK: {len(all_services)} services across {len(grouped)} providers")
+    return grouped
+
+
 def fetch_service_breakdown(
     provider_name: str,
 ) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
-    """Lifecycle / visibility / mode counts via ``usvc_seller services list``.
+    """Lifecycle / visibility / mode counts for a provider.
 
-    One paginated call per provider — ``--all`` follows cursors so the
-    counts cover the whole catalog, not just the first page.  Returns
-    three dicts:
+    Backed by a process-wide cache (filled lazily on first call) so
+    the seller API is hit exactly once per dashboard run regardless
+    of how many providers we render.
 
-    1. ``lifecycle`` keyed by :class:`ServiceStatusEnum` values
-       (``active``, ``draft``, ``review``, ``deprecated``, ``pending``,
-       ``rejected``, ``suspended``).
+    Returns three dicts:
+
+    1. ``lifecycle`` keyed by :class:`ServiceStatusEnum` values.
     2. ``visibility`` keyed by :class:`ServiceVisibilityEnum` values
-       (``public``, ``unlisted``, ``private``).  ``public`` is rendered
-       as "published" in the README to match operator vocabulary.
-    3. ``mode`` keyed by enrollment mode (``managed``, ``byok``,
-       ``byoe``).  **Currently always empty** — see
-       ``fetch_mode_counts`` TODO below.
+       (``public`` is rendered as "published" downstream).
+    3. ``mode`` — currently always empty; see ``fetch_mode_counts``.
 
-    All three default to ``{}`` when the seller API isn't reachable
-    (no key, CLI missing, network error) so the rest of the dashboard
-    stays usable.
+    All three default to ``{}`` when the SDK isn't reachable (no key,
+    SDK not installed, network error).
     """
-    if not os.environ.get("UNITYSVC_SELLER_API_KEY"):
-        return {}, {}, {}
-    if shutil.which("usvc_seller") is None:
-        return {}, {}, {}
-
-    try:
-        result = subprocess.run(
-            [
-                "usvc_seller",
-                "services",
-                "list",
-                "--provider",
-                provider_name,
-                "--all",
-                "--format",
-                "json",
-            ],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-    except FileNotFoundError as exc:
-        print(f"  ⚠ {provider_name}: usvc_seller not on PATH ({exc})")
+    global _services_cache
+    if _services_cache is None:
+        _services_cache = _populate_services_cache()
+        if _services_cache is None:
+            _services_cache = {}  # negative cache so we don't retry
+    if not _services_cache:
         return {}, {}, {}
 
-    if result.returncode != 0:
-        print(
-            f"  ⚠ {provider_name}: usvc_seller exit {result.returncode}; "
-            f"stderr={result.stderr.strip()[:300]!r}"
-        )
-        return {}, {}, {}
-
-    # The CLI prints ``No services found`` (plain text) when the
-    # filter matches nothing — that's a legitimate empty result, not
-    # a parse error.  Anything else that doesn't decode is loud.
-    raw = result.stdout.strip()
-    if not raw or raw.startswith("No services found"):
-        return {}, {}, {}
-    try:
-        services = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        print(
-            f"  ⚠ {provider_name}: JSON decode failed ({exc}); "
-            f"first 300 chars of stdout: {raw[:300]!r}"
-        )
-        return {}, {}, {}
+    services = _services_cache.get(provider_name.lower(), [])
 
     lifecycle: dict[str, int] = {}
     visibility: dict[str, int] = {}
@@ -332,8 +361,7 @@ def fetch_service_breakdown(
         if vis:
             visibility[vis] = visibility.get(vis, 0) + 1
 
-    mode = fetch_mode_counts(provider_name, services)
-    return lifecycle, visibility, mode
+    return lifecycle, visibility, fetch_mode_counts(provider_name, services)
 
 
 def fetch_mode_counts(
