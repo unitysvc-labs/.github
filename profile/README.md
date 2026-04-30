@@ -15,29 +15,29 @@ the per-repo CI runs.  See [`.github/workflows/sync-dashboard.yml`](https://gith
 Private (in-development) providers are tracked but not listed here.
 
 <!-- providers-start -->
-| Provider | Repo | Type | Lifecycle | Visibility | Mode | Validate | Open PRs |
+| Provider | Repo | Type | Lifecycle | Visibility | Listing type | Validate | Open PRs |
 |---|---|---|---|---|---|---|---|
-| [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 3 active · 3 rejected | 3 published · 3 unlisted | — | ✅ | — |
-| [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | 9 rejected | 9 unlisted | — | ✅ | — |
-| [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | 1 active · 4 rejected | 1 published · 4 unlisted | — | ✅ | — |
-| [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | — | 20 rejected | 20 unlisted | — | ❌ | — |
+| [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 3 active · 3 rejected revisions | 3 published | 3 regular | ✅ | — |
+| [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 9 rejected | 9 unlisted | 9 byok | ✅ | — |
+| [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 1 active · 3 rejected · 1 rejected revision | 1 published · 3 unlisted | 4 byok | ✅ | — |
+| [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 20 rejected | 20 unlisted | 20 byok | ❌ | — |
 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ❌ | — |
-| [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | — | 2 active · 2 rejected | 2 published · 2 unlisted | — | ✅ | — |
-| [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | llm, image | 2 active · 9 rejected | 2 published · 9 unlisted | — | ✅ | — |
-| [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 10 active · 16 rejected | 10 published · 16 unlisted | — | ✅ | 1 |
-| [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | — | 1 deprecated · 122 rejected | 123 unlisted | — | ✅ | 1 |
-| [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | — | 3 active · 5 rejected | 3 published · 5 unlisted | — | ✅ | — |
-| [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | — | 38 active · 60 rejected | 38 published · 60 unlisted | — | ✅ | 1 |
-| [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | — | 45 deprecated · 31 rejected | 76 unlisted | — | ✅ | 1 |
+| [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 2 active · 2 rejected revisions | 2 published | 2 byok | ✅ | — |
+| [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | image_generation, llm | 2 active · 7 rejected · 2 rejected revisions | 2 published · 7 unlisted | 9 regular | ✅ | — |
+| [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 10 active · 6 rejected · 10 rejected revisions | 10 published · 6 unlisted | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-groq/pulls) |
+| [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 1 deprecated · 122 rejected | 123 unlisted | 123 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
+| [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 3 active · 2 rejected · 3 rejected revisions | 3 published · 2 unlisted | 5 byok | ✅ | — |
+| [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 38 active · 22 rejected · 38 rejected revisions | 38 published · 22 unlisted | 60 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
+| [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 45 deprecated · 31 rejected | 76 unlisted | 46 regular · 30 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | — | — | — | — | ✅ | — |
 | [Recurrent](https://github.com/unitysvc-labs/unitysvc-labs/issues/35) | [`unitysvc-services-recurrent`](https://github.com/unitysvc-labs/unitysvc-services-recurrent) | — | — | — | — | — | — |
 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
-| [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | 8 rejected | 8 unlisted | — | ✅ | 1 |
+| [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 8 rejected | 8 unlisted | 8 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | — | — | — | — | ✅ | — |
 | [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | — | — | — | — | ✅ | — |
 <!-- providers-end -->
 
-_Last synced: 2026-04-30 16:38 UTC_
+_Last synced: 2026-04-30 18:23 UTC_
 
 ### Column legend
 
