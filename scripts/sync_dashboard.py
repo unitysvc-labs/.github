@@ -10,9 +10,14 @@ Sources
      with ``status:`` / ``type:`` / ``reselling:`` labels
    - latest ``ci.yml`` workflow conclusion per repo
    - open PR count per repo
-2. **Backend** (via ``usvc_seller services list --provider X``,
-   *optional* — skipped when ``UNITYSVC_SELLER_API_KEY`` is unset) —
-   active service count per provider.
+2. **Backend** (via the ``unitysvc_sellers`` SDK, *optional* —
+   skipped when ``UNITYSVC_SELLER_API_KEY`` is unset) — fetches every
+   service the API key owns once, then matches them per repo by
+   intersecting the SDK's ``service_id`` set with the IDs declared in
+   each repo's ``listing.override.json`` files.  This handles
+   multi-provider repos (e.g. ``template`` under ``unitysvc-demo``)
+   and one-provider-many-repos (``unitysvc-labs`` across http / s3 /
+   smtp / ntfy) without naming heuristics.
 3. **(future)** repo-emitted ``status.json`` artifact for ``data
    validate`` results — *not yet wired*; placeholder column rendered as
    "—" until the per-repo CI step lands.
@@ -280,17 +285,17 @@ async def _list_services_for_provider(
     return collected
 
 
-_services_cache: dict[str, list[dict[str, Any]]] | None = None
+_services_by_id: dict[str, dict[str, Any]] | None = None
 
 
-def _populate_services_cache() -> dict[str, list[dict[str, Any]]] | None:
-    """Fetch every service once, then group by provider name.
+def _populate_services_cache() -> dict[str, dict[str, Any]] | None:
+    """Fetch every service once, then index by ``service_id``.
 
     The seller list endpoint returns *all* services the API key owns
-    on each call — there's no per-provider filter server-side.  Doing
-    one call per provider would refetch the same N rows N times.
-    Instead, fetch once, group by ``provider_name``, and look up
-    per-provider from the in-memory map.
+    on each call.  Doing one call per repo would refetch the same N
+    rows N times, so we fetch once and index by ID — repos look up
+    their services by intersecting this map with the IDs declared
+    in their ``listing.override.json`` files.
     """
     api_key = os.environ.get("UNITYSVC_SELLER_API_KEY")
     if not api_key:
@@ -314,48 +319,76 @@ def _populate_services_cache() -> dict[str, list[dict[str, Any]]] | None:
         print(f"  ⚠ Seller SDK call failed ({type(exc).__name__}: {exc}); skipping")
         return None
 
-    grouped: dict[str, list[dict[str, Any]]] = {}
-    for svc in all_services:
-        key = (svc.get("provider_name") or "").lower()
-        grouped.setdefault(key, []).append(svc)
-    print(f"  ✓ Seller SDK: {len(all_services)} services across {len(grouped)} providers")
-    return grouped
+    by_id = {str(svc["id"]): svc for svc in all_services if svc.get("id")}
+    print(f"  ✓ Seller SDK: {len(all_services)} services indexed by id")
+    return by_id
 
 
-def fetch_service_breakdown(
-    provider_name: str,
-) -> tuple[dict[str, int], dict[str, int], dict[str, int], list[str]]:
-    """Lifecycle / visibility / listing-type counts and service types
-    for a provider.
+# Filename suffix that marks a per-service override file.  These tiny
+# JSON files live alongside each listing under
+# ``data/<provider>/services/<svc>/listing.override.json`` and carry
+# the live ``service_id`` written back by the seller upload step.
+OVERRIDE_FILENAME = "listing.override.json"
 
-    Backed by a process-wide cache (filled lazily on first call) so
-    the seller API is hit exactly once per dashboard run regardless
-    of how many providers we render.
 
-    Returns:
+def fetch_repo_service_ids(repo: str) -> set[str]:
+    """Service-IDs declared by this repo, read from override files.
 
-    1. ``lifecycle`` dict keyed by :class:`ServiceStatusEnum` values.
-    2. ``visibility`` dict keyed by :class:`ServiceVisibilityEnum`
-       values (``public`` is rendered as "published" downstream).
-    3. ``listing_type`` dict keyed by ``listing_type`` values
-       (``regular`` / ``byok`` / ``self_hosted``).
-    4. ``service_types`` — sorted unique ``service_type`` values across
-       the provider's services (e.g. ``["llm", "embedding"]``).  Used
-       to populate the Type column without manual issue labels.
-
-    All four default to empty when the SDK isn't reachable (no key,
-    SDK not installed, network error).
+    Walks the repo's git tree once via the GitHub API, filters for
+    ``listing.override.json`` paths, and reads ``service_id`` from
+    each.  Returns ``set()`` on any failure so the dashboard still
+    renders — the cells just go to ``—`` for that repo.
     """
-    global _services_cache
-    if _services_cache is None:
-        _services_cache = _populate_services_cache()
-        if _services_cache is None:
-            _services_cache = {}  # negative cache so we don't retry
-    if not _services_cache:
-        return {}, {}, {}, []
+    try:
+        tree_raw = gh("api", f"repos/{ORG}/{repo}/git/trees/HEAD?recursive=1")
+    except RuntimeError:
+        return set()
+    try:
+        tree = json.loads(tree_raw)
+    except json.JSONDecodeError:
+        return set()
+    if tree.get("truncated"):
+        # If a repo ever grows past the GitHub tree-API cap (~100k
+        # entries) the dashboard would silently miss late paths.  Flag
+        # it so the operator notices before stats start drifting.
+        print(f"  ⚠ {repo}: tree response truncated, may miss service_ids")
 
-    services = _services_cache.get(provider_name.lower(), [])
+    paths = [
+        node["path"]
+        for node in tree.get("tree", [])
+        if node.get("type") == "blob"
+        and node.get("path", "").endswith(OVERRIDE_FILENAME)
+    ]
+    if not paths:
+        return set()
 
+    ids: set[str] = set()
+    for path in paths:
+        try:
+            raw = gh(
+                "api",
+                "-H",
+                "Accept: application/vnd.github.raw",
+                f"repos/{ORG}/{repo}/contents/{path}",
+            )
+        except RuntimeError:
+            continue
+        try:
+            sid = json.loads(raw).get("service_id")
+        except json.JSONDecodeError:
+            continue
+        if sid:
+            ids.add(str(sid))
+    return ids
+
+
+def _breakdown_for_services(
+    services: list[dict[str, Any]],
+) -> tuple[dict[str, int], dict[str, int], dict[str, int], list[str]]:
+    """Compute lifecycle / visibility / listing-type / service-type
+    cells for a list of services (the rendering helpers consume the
+    output as-is).
+    """
     lifecycle: dict[str, int] = {}
     visibility: dict[str, int] = {}
     listing_type: dict[str, int] = {}
@@ -389,18 +422,29 @@ def fetch_service_breakdown(
     return lifecycle, visibility, listing_type, sorted(types)
 
 
-def repo_to_provider_name(repo: str, issue_title: str) -> str:
-    """Provider-name slug to pass to ``usvc_seller services list --provider``.
+def fetch_service_breakdown(
+    repo: str,
+) -> tuple[dict[str, int], dict[str, int], dict[str, int], list[str]]:
+    """Per-repo service breakdown, matched via override files.
 
-    The seller CLI does case-insensitive partial matching, so the slug
-    after ``unitysvc-services-`` (e.g. ``anthropic``, ``mistral``)
-    matches the seller's ``provider_name`` reliably.  ``issue_title``
-    is unused here but kept in the signature so callers can override
-    in the future for repos whose slug doesn't match the backend (none
-    today).
+    Pulls the repo's declared ``service_id`` set from
+    ``listing.override.json`` files and intersects it with the
+    process-wide SDK cache.  Replaces the old ``provider_name`` slug
+    heuristic, which broke for multi-provider-per-repo and
+    one-provider-many-repos relationships (e.g. ``unitysvc-labs``
+    spread across http / s3 / smtp / ntfy).
     """
-    del issue_title
-    return repo[len(REPO_PREFIX) :]
+    global _services_by_id
+    if _services_by_id is None:
+        _services_by_id = _populate_services_cache()
+        if _services_by_id is None:
+            _services_by_id = {}  # negative cache so we don't retry
+    if not _services_by_id:
+        return {}, {}, {}, []
+
+    ids = fetch_repo_service_ids(repo)
+    services = [_services_by_id[i] for i in ids if i in _services_by_id]
+    return _breakdown_for_services(services)
 
 
 def collect() -> list[ProviderRow]:
@@ -415,14 +459,14 @@ def collect() -> list[ProviderRow]:
         issue = repo_to_issue.get(repo_name)
         labels = (issue or {}).get("labels", [])
 
-        # Skip the seller-API call entirely for archived repos — they
-        # don't have live services on the gateway, and the call would
-        # just waste a round-trip returning an empty list.
+        # Skip both the seller-API match and the override-file walk
+        # for archived repos — they don't have live services on the
+        # gateway, and the calls would just waste round-trips.
         if r["isArchived"]:
             lifecycle, visibility, listing_type, service_types = {}, {}, {}, []
         else:
             lifecycle, visibility, listing_type, service_types = fetch_service_breakdown(
-                repo_to_provider_name(repo_name, "")
+                repo_name
             )
 
         # Prefer SDK-derived service types (auto-populated, always
