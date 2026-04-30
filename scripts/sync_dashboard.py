@@ -94,7 +94,7 @@ class ProviderRow:
     # pass through so future enum values automatically appear in the table.
     lifecycle_counts: dict[str, int]  # by ServiceStatusEnum value
     visibility_counts: dict[str, int]  # by ServiceVisibilityEnum value
-    mode_counts: dict[str, int]  # by enrollment mode (TODO: see fetch_mode_counts)
+    listing_type_counts: dict[str, int]  # by listing_type (regular / byok / self_hosted)
 
 
 def gh(*args: str) -> str:
@@ -324,21 +324,26 @@ def _populate_services_cache() -> dict[str, list[dict[str, Any]]] | None:
 
 def fetch_service_breakdown(
     provider_name: str,
-) -> tuple[dict[str, int], dict[str, int], dict[str, int]]:
-    """Lifecycle / visibility / mode counts for a provider.
+) -> tuple[dict[str, int], dict[str, int], dict[str, int], list[str]]:
+    """Lifecycle / visibility / listing-type counts and service types
+    for a provider.
 
     Backed by a process-wide cache (filled lazily on first call) so
     the seller API is hit exactly once per dashboard run regardless
     of how many providers we render.
 
-    Returns three dicts:
+    Returns:
 
-    1. ``lifecycle`` keyed by :class:`ServiceStatusEnum` values.
-    2. ``visibility`` keyed by :class:`ServiceVisibilityEnum` values
-       (``public`` is rendered as "published" downstream).
-    3. ``mode`` — currently always empty; see ``fetch_mode_counts``.
+    1. ``lifecycle`` dict keyed by :class:`ServiceStatusEnum` values.
+    2. ``visibility`` dict keyed by :class:`ServiceVisibilityEnum`
+       values (``public`` is rendered as "published" downstream).
+    3. ``listing_type`` dict keyed by ``listing_type`` values
+       (``regular`` / ``byok`` / ``self_hosted``).
+    4. ``service_types`` — sorted unique ``service_type`` values across
+       the provider's services (e.g. ``["llm", "embedding"]``).  Used
+       to populate the Type column without manual issue labels.
 
-    All three default to ``{}`` when the SDK isn't reachable (no key,
+    All four default to empty when the SDK isn't reachable (no key,
     SDK not installed, network error).
     """
     global _services_cache
@@ -347,52 +352,41 @@ def fetch_service_breakdown(
         if _services_cache is None:
             _services_cache = {}  # negative cache so we don't retry
     if not _services_cache:
-        return {}, {}, {}
+        return {}, {}, {}, []
 
     services = _services_cache.get(provider_name.lower(), [])
 
     lifecycle: dict[str, int] = {}
     visibility: dict[str, int] = {}
+    listing_type: dict[str, int] = {}
+    types: set[str] = set()
     for svc in services:
         status = svc.get("status")
         if status:
-            lifecycle[status] = lifecycle.get(status, 0) + 1
+            # A service with ``revision_of`` set is a revision of another
+            # service, not an independent one — bucket it separately so
+            # e.g. 3 rejected revisions of an active service don't read
+            # as 3 unrelated rejected services.
+            key = f"{status} revision" if svc.get("revision_of") else status
+            lifecycle[key] = lifecycle.get(key, 0) + 1
         vis = svc.get("visibility")
-        if vis:
+        # Revisions are staged edits to a live service, not independently
+        # routable rows — exclude them from the visibility column entirely
+        # so e.g. a provider with 3 published + 3 revisions reads as
+        # "3 published" instead of "3 published · 3 unlisted".
+        if vis and not svc.get("revision_of"):
             visibility[vis] = visibility.get(vis, 0) + 1
+        # Listing type follows the same revision rule as visibility:
+        # revisions piggy-back on their parent's listing, so counting
+        # them separately would double-count the same listed offering.
+        lt = svc.get("listing_type")
+        if lt and not svc.get("revision_of"):
+            listing_type[lt] = listing_type.get(lt, 0) + 1
+        st = svc.get("service_type")
+        if st:
+            types.add(st)
 
-    return lifecycle, visibility, fetch_mode_counts(provider_name, services)
-
-
-def fetch_mode_counts(
-    provider_name: str, services: list[dict[str, Any]]
-) -> dict[str, int]:
-    """Counts by enrollment mode (managed / byok / byoe).
-
-    TODO(post-merge): ``ServicePublic`` doesn't surface enrollment mode
-    today.  Mode is encoded in the *offering's* ``upstream_access_config``:
-
-    - all fields use ``${ secrets.X }`` → **managed**
-    - ``api_key`` uses ``${ customer_secrets.X }``, others ``${ secrets.X }`` → **byok**
-    - ``base_url`` (or ``host``) uses ``${ customer_secrets.X }`` → **byoe**
-
-    Computing this on the dashboard requires either:
-
-    1. **An N+1 detail fetch per service** (~50–100 calls per cron
-       run, fine but wasteful) — use ``client.services.get(id)`` and
-       inspect ``offering.upstream_access_config``.
-    2. **A new SDK / list-endpoint field** that returns the derived
-       mode alongside ``status`` / ``visibility``.  Cleaner; needs
-       backend change.
-    3. **Local repo inspection**: clone each ``unitysvc-services-*``
-       repo, walk its data tree, parse offerings.  Heavier but no
-       extra API surface.
-
-    For now this returns ``{}`` so the column renders as ``—``.  See
-    the dashboard PR discussion for which path you want.
-    """
-    del provider_name, services  # unused until one of the paths above lands
-    return {}
+    return lifecycle, visibility, listing_type, sorted(types)
 
 
 def repo_to_provider_name(repo: str, issue_title: str) -> str:
@@ -425,11 +419,17 @@ def collect() -> list[ProviderRow]:
         # don't have live services on the gateway, and the call would
         # just waste a round-trip returning an empty list.
         if r["isArchived"]:
-            lifecycle, visibility, mode = {}, {}, {}
+            lifecycle, visibility, listing_type, service_types = {}, {}, {}, []
         else:
-            lifecycle, visibility, mode = fetch_service_breakdown(
+            lifecycle, visibility, listing_type, service_types = fetch_service_breakdown(
                 repo_to_provider_name(repo_name, "")
             )
+
+        # Prefer SDK-derived service types (auto-populated, always
+        # current) over issue labels, which require manual upkeep.
+        # Fall back to labels only when the SDK has nothing — archived
+        # repos, or runs without ``UNITYSVC_SELLER_API_KEY``.
+        type_labels = service_types or label_values(labels, "type")
 
         rows.append(
             ProviderRow(
@@ -438,12 +438,12 @@ def collect() -> list[ProviderRow]:
                 is_archived=r["isArchived"],
                 issue_number=(issue or {}).get("number"),
                 issue_title=(issue or {}).get("title") or repo_name[len(REPO_PREFIX) :],
-                type_labels=label_values(labels, "type"),
+                type_labels=type_labels,
                 ci_conclusion=fetch_ci_conclusion(repo_name) if not r["isArchived"] else None,
                 open_pr_count=fetch_open_pr_count(repo_name) if not r["isArchived"] else 0,
                 lifecycle_counts=lifecycle,
                 visibility_counts=visibility,
-                mode_counts=mode,
+                listing_type_counts=listing_type,
             )
         )
 
@@ -487,8 +487,10 @@ def _ci_cell(conclusion: str | None) -> str:
     return _CI_EMOJI.get(conclusion, "⚪")
 
 
-def _pr_cell(count: int) -> str:
-    return "—" if count == 0 else str(count)
+def _pr_cell(count: int, repo: str) -> str:
+    if count == 0:
+        return "—"
+    return f"[{count}](https://github.com/{ORG}/{repo}/pulls)"
 
 
 def _counts_cell(
@@ -518,7 +520,16 @@ def _counts_cell(
         k for k in filtered if k not in primary
     )
 
-    parts = [f"{filtered[k]} {(display_map or {}).get(k, k)}" for k in ordered_keys]
+    def _label(key: str, count: int) -> str:
+        name = (display_map or {}).get(key, key)
+        # Pluralize the revision suffix so "1 rejected revision" but
+        # "3 rejected revisions" — the other lifecycle/visibility names
+        # are adjectives that don't need plural agreement.
+        if name.endswith("revision") and count != 1:
+            name += "s"
+        return f"{count} {name}"
+
+    parts = [_label(k, filtered[k]) for k in ordered_keys]
     return " · ".join(parts)
 
 
@@ -537,8 +548,14 @@ def _visibility_cell(counts: dict[str, int]) -> str:
     )
 
 
-def _mode_cell(counts: dict[str, int]) -> str:
-    return _counts_cell(counts, primary_order=["managed", "byok", "byoe"])
+def _listing_type_cell(counts: dict[str, int]) -> str:
+    # ``self_hosted`` is the SDK enum value; operators say "byoe"
+    # (bring-your-own-endpoint) — surface the operator term.
+    return _counts_cell(
+        counts,
+        primary_order=["regular", "byok", "self_hosted"],
+        display_map={"self_hosted": "byoe"},
+    )
 
 
 def render_readme_table(rows: list[ProviderRow]) -> str:
@@ -550,7 +567,7 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
     public_rows = [r for r in rows if r.is_public and not r.is_archived]
 
     lines = [
-        "| Provider | Repo | Type | Lifecycle | Visibility | Mode | Validate | Open PRs |",
+        "| Provider | Repo | Type | Lifecycle | Visibility | Listing type | Validate | Open PRs |",
         "|---|---|---|---|---|---|---|---|",
     ]
     for r in public_rows:
@@ -570,9 +587,9 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
                     type_cell,
                     _lifecycle_cell(r.lifecycle_counts),
                     _visibility_cell(r.visibility_counts),
-                    _mode_cell(r.mode_counts),
+                    _listing_type_cell(r.listing_type_counts),
                     _ci_cell(r.ci_conclusion),
-                    _pr_cell(r.open_pr_count),
+                    _pr_cell(r.open_pr_count, r.repo),
                 ]
             )
             + " |"
@@ -603,9 +620,9 @@ def render_issue_comment(row: ProviderRow, timestamp: str) -> str:
         f"- Type: {type_cell}\n"
         f"- Lifecycle: {_lifecycle_cell(row.lifecycle_counts)}\n"
         f"- Visibility: {visibility_cell}\n"
-        f"- Mode: {_mode_cell(row.mode_counts)}\n"
+        f"- Listing type: {_listing_type_cell(row.listing_type_counts)}\n"
         f"- Last CI: {_ci_cell(row.ci_conclusion)}\n"
-        f"- Open PRs: {_pr_cell(row.open_pr_count)}\n"
+        f"- Open PRs: {_pr_cell(row.open_pr_count, row.repo)}\n"
     )
 
 
