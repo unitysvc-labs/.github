@@ -37,7 +37,7 @@ Private (in-development) providers are tracked but not listed here.
 | [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | — | — | — | — | ✅ | — |
 <!-- providers-end -->
 
-_Last synced: 2026-04-30 16:25 UTC_
+_Last synced: 2026-04-30 16:32 UTC_
 
 ### Column legend
 
