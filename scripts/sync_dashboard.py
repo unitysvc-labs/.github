@@ -542,6 +542,58 @@ def _ci_cell(conclusion: str | None) -> str:
     return _CI_EMOJI.get(conclusion, "⚪")
 
 
+# Lifecycle keys that count as "in-flight" (work pending) — anything
+# here flips a row to the yellow status bucket regardless of how many
+# active services it also has.  Revisions in any state are by
+# definition in-flight (they're staged edits awaiting a transition).
+_IN_FLIGHT_LIFECYCLE = {"draft", "review", "rejected", "suspended", "pending"}
+
+
+def _status_cell(row: ProviderRow) -> str:
+    """Roll the per-repo signals up to a single health badge.
+
+    Priority order (first match wins): broken > in-flight > healthy >
+    unknown.  Both ``rejected`` services and open PRs flip a row to
+    in-flight (yellow); the operator's stance is "someone needs to
+    look at this", whether the work is already underway or not.
+    """
+    # Archived repos are intentionally inert; a colored badge there
+    # would just be noise.  Same for repos with literally no signal —
+    # the dashboard ran without an API key, or the repo has nothing
+    # populated yet.
+    if row.is_archived:
+        return "⚪"
+    has_any_signal = (
+        bool(row.lifecycle_counts) or row.ci_conclusion is not None
+    )
+    if not has_any_signal:
+        return "⚪"
+
+    # 🔴 broken: CI explicitly failed, or no active service at all on a
+    # non-archived repo with data populated.
+    if row.ci_conclusion == "failure":
+        return "🔴"
+    if row.lifecycle_counts and row.lifecycle_counts.get("active", 0) == 0:
+        return "🔴"
+
+    # 🟡 in-flight: anything pending — open PR, rejected/draft/review
+    # services, or any revision in any state.
+    if row.open_pr_count > 0:
+        return "🟡"
+    for k in row.lifecycle_counts:
+        if k in _IN_FLIGHT_LIFECYCLE or k.endswith(" revision"):
+            return "🟡"
+
+    # 🟢 healthy: CI green (or absent — repos can be healthy before
+    # their first CI run), ≥1 active service, no in-flight states.
+    if row.ci_conclusion in (None, "success") and row.lifecycle_counts.get("active", 0) > 0:
+        return "🟢"
+
+    # Fallback — CI in some non-failure non-success state (cancelled,
+    # in_progress) and no other strong signal.
+    return "⚪"
+
+
 def _pr_cell(count: int, repo: str) -> str:
     if count == 0:
         return "—"
@@ -631,7 +683,7 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
     public_rows = [r for r in rows if r.is_public and not r.is_archived]
 
     lines = [
-        "| Provider | Repo | Type | Lifecycle | Visibility | Listing type | Validate | Open PRs |",
+        "| Provider | Repo | Type | Lifecycle | Visibility | Listing type | Status | Open PRs |",
         "|---|---|---|---|---|---|---|---|",
     ]
 
@@ -653,7 +705,7 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
                     _lifecycle_cell(r.lifecycle_counts),
                     _visibility_cell(r.visibility_counts),
                     _listing_type_cell(r.listing_type_counts),
-                    _ci_cell(r.ci_conclusion),
+                    _status_cell(r),
                     _pr_cell(r.open_pr_count, r.repo),
                 ]
             )
@@ -705,6 +757,7 @@ def render_issue_comment(row: ProviderRow, timestamp: str) -> str:
     return (
         f"{COMMENT_MARKER}\n"
         f"**Provider status snapshot** _(auto-synced {timestamp} UTC)_\n\n"
+        f"- Status: {_status_cell(row)}\n"
         f"- Repo: [`{row.repo}`](https://github.com/{ORG}/{row.repo})"
         f" — {'public' if row.is_public else 'private'}"
         f"{' · archived' if row.is_archived else ''}\n"
