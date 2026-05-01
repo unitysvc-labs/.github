@@ -17,7 +17,7 @@ Private (in-development) providers are tracked but not listed here.
 <!-- providers-start -->
 | Provider | Repo | Type | Lifecycle | Visibility | Listing type | Status | Open PRs |
 |---|---|---|---|---|---|---|---|
-| [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 3 active | 3 published | 3 managed | 🟡 | [2](https://github.com/unitysvc-labs/unitysvc-services-aionlabs/pulls) |
+| [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 3 active | 3 published | 3 managed | 🟢 | — |
 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 8 rejected | 8 unlisted | 8 byok | 🔴 | — |
 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 2 active · 2 rejected | 1 published · 3 unlisted | 4 byok | 🟡 | — |
 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 13 rejected | 13 unlisted | 13 byok | 🔴 | — |
@@ -36,10 +36,10 @@ Private (in-development) providers are tracked but not listed here.
 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 7 rejected | 7 unlisted | 7 byok | 🔴 | — |
 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 rejected | 3 unlisted | 2 byok · 1 managed | 🔴 | — |
 | [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | content, email, llm, proxy | 14 active · 1 rejected · 2 rejected revisions | 13 published · 2 unlisted | 6 byok · 1 byoe · 8 managed | 🟡 | — |
-| **Total** (19 repos) | — | — | 135 active · 1 deprecated · 204 rejected · 25 rejected revisions | 112 published · 228 unlisted | 256 byok · 1 byoe · 83 managed | — | 3 |
+| **Total** (19 repos) | — | — | 135 active · 1 deprecated · 204 rejected · 25 rejected revisions | 112 published · 228 unlisted | 256 byok · 1 byoe · 83 managed | — | 1 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-01 06:27 UTC_
+_Last synced: 2026-05-01 07:56 UTC_
 
 ### Column legend
 
