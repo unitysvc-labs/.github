@@ -257,129 +257,95 @@ def fetch_open_pr_count(repo: str) -> int:
     return len(json.loads(out))
 
 
-async def _list_services_for_provider(
-    client: Any, provider_name: str
-) -> list[dict[str, Any]]:
-    """Pull every service for a provider via the SDK, paging cursors.
+# Process-wide flag: ``None`` until the first call, then either the imported
+# ``AsyncClient`` class or ``False`` if the SDK is unusable / unconfigured.
+# Caches the import + env-var checks so we don't repeat them per repo.
+_seller_client_cls: Any = None
 
-    Mirrors the seller CLI's ``services list --provider <name> --all``
-    behaviour: server-side pagination via cursor, client-side filter
-    on ``provider_name`` (case-insensitive substring) since the
-    backend list endpoint doesn't take a provider filter.
+
+def _seller_client_class() -> Any:
+    """Resolve the seller ``AsyncClient`` class once, cache the result.
+
+    Returns ``False`` (not ``None``) when the SDK / API key is missing so
+    repeat calls short-circuit without re-emitting the warning.
     """
-    needle = provider_name.lower()
-    collected: list[dict[str, Any]] = []
-    cursor: str | None = None
-    while True:
-        page = await client.services.list(cursor=cursor, limit=200)
-        for svc in page.data:
-            svc_dict = svc.to_dict() if hasattr(svc, "to_dict") else dict(svc)
-            if needle in (svc_dict.get("provider_name") or "").lower():
-                collected.append(svc_dict)
-        if not getattr(page, "has_more", False):
-            break
-        next_cursor = getattr(page, "next_cursor", None)
-        if not next_cursor or not isinstance(next_cursor, str):
-            break
-        cursor = next_cursor
-    return collected
+    global _seller_client_cls
+    if _seller_client_cls is not None:
+        return _seller_client_cls
 
-
-_services_by_id: dict[str, dict[str, Any]] | None = None
-
-
-def _populate_services_cache() -> dict[str, dict[str, Any]] | None:
-    """Fetch every service once, then index by ``service_id``.
-
-    The seller list endpoint returns *all* services the API key owns
-    on each call.  Doing one call per repo would refetch the same N
-    rows N times, so we fetch once and index by ID — repos look up
-    their services by intersecting this map with the IDs declared
-    in their ``listing.override.json`` files.
-    """
     api_key = os.environ.get("UNITYSVC_SELLER_API_KEY")
     if not api_key:
-        return None
+        _seller_client_cls = False
+        return False
 
     try:
         from unitysvc_sellers import AsyncClient
     except ImportError as exc:
         print(f"  ⚠ unitysvc_sellers SDK not installed ({exc}); skipping seller data")
-        return None
+        _seller_client_cls = False
+        return False
 
-    base_url = os.environ.get("UNITYSVC_SELLER_API_URL")
-
-    async def _fetch_all() -> list[dict[str, Any]]:
-        async with AsyncClient(api_key=api_key, base_url=base_url) as client:
-            return await _list_services_for_provider(client, "")  # empty filter → all
-
-    try:
-        all_services = asyncio.run(_fetch_all())
-    except Exception as exc:  # noqa: BLE001 — surface the cause and degrade gracefully
-        print(f"  ⚠ Seller SDK call failed ({type(exc).__name__}: {exc}); skipping")
-        return None
-
-    by_id = {str(svc["id"]): svc for svc in all_services if svc.get("id")}
-    print(f"  ✓ Seller SDK: {len(all_services)} services indexed by id")
-    return by_id
-
-
-# Filename suffix that marks a per-service override file.  These tiny
-# JSON files live alongside each listing under
-# ``data/<provider>/services/<svc>/listing.override.json`` and carry
-# the live ``service_id`` written back by the seller upload step.
-OVERRIDE_FILENAME = "listing.override.json"
+    _seller_client_cls = AsyncClient
+    return AsyncClient
 
 
 def fetch_repo_service_ids(repo: str) -> set[str]:
-    """Service-IDs declared by this repo, read from override files.
+    """Service-IDs declared by this repo, discovered via the canonical
+    listing_v1 schema walk.
 
-    Walks the repo's git tree once via the GitHub API, filters for
-    ``listing.override.json`` paths, and reads ``service_id`` from
-    each.  Returns ``set()`` on any failure so the dashboard still
-    renders — the cells just go to ``—`` for that repo.
+    Shallow-clones the repo into a temp dir and runs
+    ``find_files_by_schema`` from ``unitysvc-core`` — the same code
+    path that powers ``usvc_seller services list --local-ids``.  This
+    matters because:
+
+    - listing files are identified by their ``schema`` field, not by
+      filename.  A folder may contain multiple listings (and therefore
+      multiple ``listing[.override].{json,toml}`` files); a filename-
+      based walk hard-codes one shape and silently drops everything
+      else (e.g. ``.toml`` overrides).
+    - override files are merged into their base listing automatically,
+      so the resulting ``data`` dict carries the final ``service_id``
+      regardless of which file declared it.
+
+    Returns ``set()`` on any failure so the dashboard still renders —
+    the cells just go to ``—`` for that repo.
     """
     try:
-        tree_raw = gh("api", f"repos/{ORG}/{repo}/git/trees/HEAD?recursive=1")
-    except RuntimeError:
+        from unitysvc_core.utils import find_files_by_schema
+    except ImportError as exc:
+        print(f"  ⚠ unitysvc_core not installed ({exc}); skipping {repo}")
         return set()
+
+    import shutil
+    import tempfile
+
+    tmp_root = Path(tempfile.mkdtemp(prefix="labs-dashboard-"))
+    clone_dir = tmp_root / repo
     try:
-        tree = json.loads(tree_raw)
-    except json.JSONDecodeError:
-        return set()
-    if tree.get("truncated"):
-        # If a repo ever grows past the GitHub tree-API cap (~100k
-        # entries) the dashboard would silently miss late paths.  Flag
-        # it so the operator notices before stats start drifting.
-        print(f"  ⚠ {repo}: tree response truncated, may miss service_ids")
+        # ``gh repo clone`` reuses gh's auth, so private labs repos work
+        # without extra credential plumbing.  ``-- --depth 1`` is passed
+        # through to git: we only need the latest tree, no history.
+        result = subprocess.run(
+            [
+                "gh", "repo", "clone", f"{ORG}/{repo}", str(clone_dir),
+                "--", "--depth", "1",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            print(f"  ⚠ {repo}: clone failed: {result.stderr.strip()}")
+            return set()
 
-    paths = [
-        node["path"]
-        for node in tree.get("tree", [])
-        if node.get("type") == "blob"
-        and node.get("path", "").endswith(OVERRIDE_FILENAME)
-    ]
-    if not paths:
-        return set()
-
-    ids: set[str] = set()
-    for path in paths:
-        try:
-            raw = gh(
-                "api",
-                "-H",
-                "Accept: application/vnd.github.raw",
-                f"repos/{ORG}/{repo}/contents/{path}",
-            )
-        except RuntimeError:
-            continue
-        try:
-            sid = json.loads(raw).get("service_id")
-        except json.JSONDecodeError:
-            continue
-        if sid:
-            ids.add(str(sid))
-    return ids
+        ids: set[str] = set()
+        for _path, _fmt, data in find_files_by_schema(clone_dir, "listing_v1"):
+            sid = data.get("service_id")
+            if sid:
+                ids.add(str(sid))
+        return ids
+    finally:
+        shutil.rmtree(tmp_root, ignore_errors=True)
 
 
 def _breakdown_for_services(
@@ -428,34 +394,73 @@ def fetch_service_breakdown(
     """Per-repo service breakdown, matched via override files.
 
     Pulls the repo's declared ``service_id`` set from
-    ``listing.override.json`` files and intersects it with the
-    process-wide SDK cache.  Replaces the old ``provider_name`` slug
-    heuristic, which broke for multi-provider-per-repo and
-    one-provider-many-repos relationships (e.g. ``unitysvc-labs``
-    spread across http / s3 / smtp / ntfy).
+    ``listing.override.json`` files and resolves them through the
+    seller list endpoint with the ``ids=`` filter.  The backend
+    expands ``ids=`` to also return any service whose ``revision_of``
+    matches one of the requested ids (see backend PR
+    unitysvc/unitysvc#915), so revisions come back in the same call
+    — no separate lookup needed.
+
+    Replaces the old "fetch all services + index by id" cache pattern,
+    which had to refetch the entire seller catalog on every run and
+    then walk it twice (once for parent ids, once for revisions).
     """
-    global _services_by_id
-    if _services_by_id is None:
-        _services_by_id = _populate_services_cache()
-        if _services_by_id is None:
-            _services_by_id = {}  # negative cache so we don't retry
-    if not _services_by_id:
+    client_cls = _seller_client_class()
+    if not client_cls:
         return {}, {}, {}, []
 
     ids = fetch_repo_service_ids(repo)
-    # Override files only carry the parent service's ID.  Revisions are
-    # separate rows in the SDK with their own IDs and ``revision_of``
-    # pointing back at the parent, so they wouldn't be picked up by a
-    # plain ID intersection.  Pull them in by following ``revision_of``
-    # to any matched parent — that's how the lifecycle column gets
-    # "3 active · 6 rejected revisions" instead of just "3 active".
-    services = [_services_by_id[i] for i in ids if i in _services_by_id]
-    services += [
-        svc
-        for svc in _services_by_id.values()
-        if str(svc.get("revision_of") or "") in ids
-    ]
+    if not ids:
+        return {}, {}, {}, []
+
+    services = _fetch_services_by_ids(client_cls, ids)
     return _breakdown_for_services(services)
+
+
+def _fetch_services_by_ids(
+    client_cls: Any, ids: set[str]
+) -> list[dict[str, Any]]:
+    """Resolve a set of service ids through the seller list endpoint.
+
+    The backend returns the requested services *and* any pending
+    revisions of them in one call (``ids=`` auto-expands to also
+    match ``revision_of=``).  Cursor-paged in case the id set + its
+    revisions exceed the 200-row server cap.
+
+    Returns ``[]`` on any failure so the dashboard still renders —
+    the cells just go to ``—`` for that repo.
+    """
+    api_key = os.environ.get("UNITYSVC_SELLER_API_KEY")
+    base_url = os.environ.get("UNITYSVC_SELLER_API_URL")
+    from uuid import UUID
+
+    uuid_ids = [UUID(sid) for sid in ids]
+    page_limit = min(max(len(uuid_ids) * 2, 50), 200)
+
+    async def _fetch() -> list[dict[str, Any]]:
+        collected: list[dict[str, Any]] = []
+        cursor: str | None = None
+        async with client_cls(api_key=api_key, base_url=base_url) as client:
+            while True:
+                page = await client.services.list(
+                    ids=uuid_ids, limit=page_limit, cursor=cursor
+                )
+                for svc in page.data:
+                    svc_dict = svc.to_dict() if hasattr(svc, "to_dict") else dict(svc)
+                    collected.append(svc_dict)
+                if not getattr(page, "has_more", False):
+                    break
+                next_cursor = getattr(page, "next_cursor", None)
+                if not next_cursor or not isinstance(next_cursor, str):
+                    break
+                cursor = next_cursor
+        return collected
+
+    try:
+        return asyncio.run(_fetch())
+    except Exception as exc:  # noqa: BLE001 — surface the cause and degrade gracefully
+        print(f"  ⚠ Seller SDK call failed ({type(exc).__name__}: {exc}); skipping")
+        return []
 
 
 def collect() -> list[ProviderRow]:
