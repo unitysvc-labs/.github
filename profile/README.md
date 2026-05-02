@@ -21,7 +21,7 @@ Private (in-development) providers are tracked but not listed here.
 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 8 rejected | 8 unlisted | 8 byok | 🔴 | — |
 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 4 active | 4 published | 4 byok | 🔴 | — |
 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 13 rejected | 13 unlisted | 13 byok | 🔴 | — |
-| [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | 🔴 | — |
+| [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | 🔴 | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 2 active | 2 published | 2 byok | 🟢 | — |
 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | image_generation, llm | 2 active · 4 rejected · 2 rejected revisions | 2 published · 4 unlisted | 6 managed | 🔴 | [1](https://github.com/unitysvc-labs/unitysvc-services-fireworks/pulls) |
 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 10 active · 6 rejected · 3 rejected revisions | 10 published · 6 unlisted | 16 byok | 🔴 | — |
@@ -36,10 +36,10 @@ Private (in-development) providers are tracked but not listed here.
 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 7 rejected | 7 unlisted | 7 byok | 🔴 | — |
 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 rejected | 3 unlisted | 2 byok · 1 managed | 🔴 | — |
 | [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | content, email, llm, proxy | 15 active | 15 published | 6 byok · 1 byoe · 8 managed | 🟢 | — |
-| **Total** (19 repos) | — | — | 139 active · 1 deprecated · 201 rejected · 23 rejected revisions | 139 published · 202 unlisted | 256 byok · 1 byoe · 84 managed | — | 1 |
+| **Total** (19 repos) | — | — | 139 active · 1 deprecated · 201 rejected · 23 rejected revisions | 139 published · 202 unlisted | 256 byok · 1 byoe · 84 managed | — | 2 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-02 17:43 UTC_
+_Last synced: 2026-05-02 18:39 UTC_
 
 ### Column legend
 
