@@ -29,17 +29,17 @@ Private (in-development) providers are tracked but not listed here.
 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 3 active · 1 rejected | 3 published · 1 unlisted | 4 byok | 🟡 | — |
 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 38 active · 13 rejected · 8 rejected revisions | 38 published · 13 unlisted | 51 byok | 🔴 | — |
 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 28 rejected | 28 unlisted | 28 byok | 🔴 | — |
-| [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | — | — | — | — | ⚪ | — |
+| [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 managed | 🟢 | — |
 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | 🔴 | — |
 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | llm | 54 active · 6 rejected · 10 rejected revisions | 54 published · 6 unlisted | 60 managed | 🔴 | — |
 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | content | 6 active · 2 rejected | 6 published · 2 unlisted | 3 byok · 5 managed | 🟡 | — |
 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 7 rejected | 7 unlisted | 7 byok | 🔴 | — |
 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 rejected | 3 unlisted | 2 byok · 1 managed | 🔴 | — |
-| [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | content, email, llm, proxy | 15 active · 3 draft revisions | 15 published | 6 byok · 1 byoe · 8 managed | 🟡 | — |
-| **Total** (19 repos) | — | — | 138 active · 1 deprecated · 3 draft revisions · 201 rejected · 23 rejected revisions | 138 published · 202 unlisted | 256 byok · 1 byoe · 83 managed | — | 1 |
+| [Template](https://github.com/unitysvc-labs/unitysvc-labs/issues/39) | [`unitysvc-services-template`](https://github.com/unitysvc-labs/unitysvc-services-template) | content, email, llm, proxy | 15 active | 15 published | 6 byok · 1 byoe · 8 managed | 🟢 | — |
+| **Total** (19 repos) | — | — | 139 active · 1 deprecated · 201 rejected · 23 rejected revisions | 139 published · 202 unlisted | 256 byok · 1 byoe · 84 managed | — | 1 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-02 12:39 UTC_
+_Last synced: 2026-05-02 17:43 UTC_
 
 ### Column legend
 
