@@ -688,8 +688,8 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
     public_rows = [r for r in rows if r.is_public and not r.is_archived]
 
     lines = [
-        "| Provider | Repo | Type | Lifecycle | Visibility | Listing type | Status | Open PRs |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Status | Provider | Repo | Type | Lifecycle | Visibility | Listing type | CI | Open PRs |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
 
     for r in public_rows:
@@ -704,13 +704,14 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
             "| "
             + " | ".join(
                 [
+                    _status_cell(r),
                     provider_link,
                     repo_link,
                     type_cell,
                     _lifecycle_cell(r.lifecycle_counts),
                     _visibility_cell(r.visibility_counts),
                     _listing_type_cell(r.listing_type_counts),
-                    _status_cell(r),
+                    _ci_cell(r.ci_conclusion),
                     _pr_cell(r.open_pr_count, r.repo),
                 ]
             )
@@ -729,6 +730,7 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
         "| "
         + " | ".join(
             [
+                "—",
                 f"**Total** ({len(public_rows)} repos)",
                 "—",
                 "—",
