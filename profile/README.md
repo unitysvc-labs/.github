@@ -26,20 +26,20 @@ Private (in-development) providers are tracked but not listed here.
 | 🟢 | demo | [`unitysvc-services-demo`](https://github.com/unitysvc-labs/unitysvc-services-demo) | content, email, llm, notification, proxy | 16 active | 16 published | 6 byok · 1 byoe · 9 managed | ✅ | — |
 | 🟢 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | image_generation, llm | 9 active | 9 published | 9 managed | ✅ | — |
 | 🟡 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 10 active · 7 draft revisions · 6 rejected · 3 rejected revisions | 10 published · 6 unlisted | 16 byok | ✅ | — |
-| 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 1 active · 110 draft · 1 deprecated | 1 published · 111 unlisted | 112 byok | ❌ | — |
+| 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 1 active · 3 deprecated · 108 rejected · 1 rejected revision | 1 published · 111 unlisted | 112 byok | ❌ | — |
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 3 active | 3 published | 3 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 39 active · 20 draft · 1 deprecated · 39 draft revisions | 40 published · 20 unlisted | 60 byok | ✅ | — |
 | 🔴 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 29 active · 1 rejected | 29 published · 1 unlisted | 30 byok | ❌ | — |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 managed | ✅ | — |
-| 🔴 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | ❌ | — |
+| 🔴 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🔴 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | llm | 63 active · 9 rejected · 14 rejected revisions | 63 published · 9 unlisted | 72 managed | ❌ | — |
 | 🟢 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | content | 8 active | 8 published | 3 byok · 5 managed | ✅ | — |
 | 🟢 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 8 active | 8 unlisted | 8 byok | ✅ | — |
 | 🟢 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 active | 3 published | 2 byok · 1 managed | ✅ | — |
-| — | **Total** (19 repos) | — | — | 232 active · 130 draft · 3 deprecated · 46 draft revisions · 16 rejected · 17 rejected revisions | 225 published · 156 unlisted | 270 byok · 1 byoe · 110 managed | — | — |
+| — | **Total** (19 repos) | — | — | 232 active · 20 draft · 5 deprecated · 46 draft revisions · 124 rejected · 18 rejected revisions | 225 published · 156 unlisted | 270 byok · 1 byoe · 110 managed | — | 1 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-03 22:26 UTC_
+_Last synced: 2026-05-04 01:24 UTC_
 
 ### Column legend
 
