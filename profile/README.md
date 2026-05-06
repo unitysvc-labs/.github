@@ -33,12 +33,12 @@ Private (in-development) providers are tracked but not listed here.
 | 🟡 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | embedding, llm | 232 active · 30 rejected · 6 rejected revisions | 232 published · 30 unlisted | 33 byok · 229 byoe | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🟡 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | embedding, llm | 68 active · 12 rejected · 22 rejected revisions | 63 published · 17 unlisted | 80 managed | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-parasail/pulls) |
 | 🟢 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | content | 8 active | 8 published | 3 byok · 5 managed | ✅ | — |
-| 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 8 active | 8 published | 8 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
+| 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 9 active | 9 published | 9 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🟢 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 active | 3 published | 2 byok · 1 managed | ✅ | — |
-| — | **Total** (18 repos) | — | — | 434 active · 20 draft · 155 deprecated · 46 draft revisions · 48 rejected · 51 rejected revisions | 460 published · 197 unlisted | 308 byok · 229 byoe · 120 managed | — | 6 |
+| — | **Total** (18 repos) | — | — | 435 active · 20 draft · 155 deprecated · 46 draft revisions · 48 rejected · 51 rejected revisions | 461 published · 197 unlisted | 309 byok · 229 byoe · 120 managed | — | 6 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-06 01:21 UTC_
+_Last synced: 2026-05-06 13:23 UTC_
 
 ### Column legend
 
