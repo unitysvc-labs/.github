@@ -38,7 +38,7 @@ Private (in-development) providers are tracked but not listed here.
 | — | **Total** (18 repos) | — | — | 435 active · 20 draft · 155 deprecated · 46 draft revisions · 48 rejected · 51 rejected revisions | 461 published · 197 unlisted | 309 byok · 229 byoe · 120 managed | — | 5 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-09 01:27 UTC_
+_Last synced: 2026-05-09 07:29 UTC_
 
 ### Column legend
 
