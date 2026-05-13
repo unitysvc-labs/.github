@@ -27,7 +27,7 @@ Private (in-development) providers are tracked but not listed here.
 | 🟡 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 10 active · 7 draft revisions · 6 rejected · 3 rejected revisions | 10 published · 6 unlisted | 16 byok | ✅ | — |
 | ⚪ | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | — | — | — | — | ✅ | — |
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 3 active | 3 published | 3 byok | ✅ | — |
-| 🔴 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 39 active · 20 draft · 39 draft revisions | 39 published · 20 unlisted | 59 byok | ❌ | — |
+| 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 39 active · 20 draft · 39 draft revisions | 39 published · 20 unlisted | 59 byok | ✅ | — |
 | ⚪ | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | — | — | — | — | ✅ | — |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 managed | ✅ | — |
 | 🟡 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | embedding, llm | 232 active · 30 rejected · 6 rejected revisions | 232 published · 30 unlisted | 33 byok · 229 byoe | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
@@ -38,7 +38,7 @@ Private (in-development) providers are tracked but not listed here.
 | — | **Total** (18 repos) | — | — | 435 active · 20 draft · 46 draft revisions · 48 rejected · 51 rejected revisions | 430 published · 73 unlisted | 155 byok · 229 byoe · 119 managed | — | 6 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-13 01:48 UTC_
+_Last synced: 2026-05-13 08:28 UTC_
 
 ### Column legend
 
