@@ -31,14 +31,14 @@ Private (in-development) providers are tracked but not listed here.
 | ⚪ | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | — | — | — | — | ✅ | — |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 managed | ✅ | — |
 | 🔴 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | ❌ | [2](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
-| 🟡 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | embedding, llm | 51 active · 29 rejected | 80 published | 80 managed | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-parasail/pulls) |
+| 🔴 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | embedding, llm | 51 active · 29 rejected | 80 published | 80 managed | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-parasail/pulls) |
 | 🟡 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | content | 7 active · 1 rejected | 8 published | 3 byok · 5 managed | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 7 active · 2 rejected | 9 published | 9 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🟢 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 3 active | 3 published | 2 byok · 1 managed | ✅ | — |
 | — | **Total** (18 repos) | — | — | 140 active · 81 rejected | 221 published | 122 byok · 99 managed | — | 9 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-24 01:51 UTC_
+_Last synced: 2026-05-24 08:12 UTC_
 
 ### Column legend
 
