@@ -10,14 +10,22 @@ Sources
      with ``status:`` / ``type:`` / ``reselling:`` labels
    - latest ``ci.yml`` workflow conclusion per repo
    - open PR count per repo
-2. **Backend** (via the ``unitysvc_sellers`` SDK, *optional* —
-   skipped when ``UNITYSVC_SELLER_API_KEY`` is unset) — fetches every
-   service the API key owns once, then matches them per repo by
-   intersecting the SDK's ``service_id`` set with the IDs declared in
-   each repo's ``listing.override.json`` files.  This handles
-   multi-provider repos (e.g. ``template`` under ``unitysvc-demo``)
-   and one-provider-many-repos (``unitysvc-labs`` across http / s3 /
-   smtp / ntfy) without naming heuristics.
+2. **Backend** (via the ``unitysvc_sellers`` SDK, *per-environment*) —
+   queried once per environment (production + staging) using two
+   independent ``(API_URL, API_KEY)`` pairs.  Each environment yields
+   its own table on the README and its own sub-block on the per-issue
+   sticky comment.  For each repo we read the ``service_id`` set from
+   its ``listing.override.{json,toml}`` files (the canonical
+   ``listing_v1`` walk) and look those IDs up on each backend — same
+   IDs are expected to exist in staging and production (lab repos
+   share IDs across environments) but cells degrade to "—" when a
+   backend is unreachable or the API key for that environment is
+   unset.  Per-env env vars:
+     - production: ``UNITYSVC_SELLER_PRODUCTION_API_KEY`` (required),
+       ``UNITYSVC_SELLER_PRODUCTION_API_URL`` (optional — defaults to
+       ``https://seller.unitysvc.com/v1``).
+     - staging: ``UNITYSVC_SELLER_STAGING_API_KEY``,
+       ``UNITYSVC_SELLER_STAGING_API_URL``.
 3. **(future)** repo-emitted ``status.json`` artifact for ``data
    validate`` results — *not yet wired*; placeholder column rendered as
    "—" until the per-repo CI step lands.
@@ -26,10 +34,12 @@ Surfaces
 --------
 1. ``profile/README.md`` — replaces content between the
    ``<!-- providers-start -->`` / ``<!-- providers-end -->`` markers
-   with a Markdown table.  Public repos only.
+   with two Markdown tables (Production then Staging) under ``###``
+   sub-headings.  Public repos only.
 2. ``unitysvc-labs/unitysvc-labs/issues/{N}`` — sticky comment per
    tracking issue (matched by a ``<!-- provider-status-sync -->`` HTML
-   marker so reruns edit instead of accumulating).  All repos
+   marker so reruns edit instead of accumulating).  Each comment
+   carries both env snapshots, side-by-side.  All repos
    (including private), since the issue tracker is private.
 
 Run modes
@@ -258,25 +268,23 @@ def fetch_open_pr_count(repo: str) -> int:
 
 
 # Process-wide flag: ``None`` until the first call, then either the imported
-# ``AsyncClient`` class or ``False`` if the SDK is unusable / unconfigured.
-# Caches the import + env-var checks so we don't repeat them per repo.
+# ``AsyncClient`` class or ``False`` if the SDK is unusable.  Caches the
+# import check (env-key checks are per-call now, so the import is the only
+# thing worth caching here).
 _seller_client_cls: Any = None
 
 
 def _seller_client_class() -> Any:
     """Resolve the seller ``AsyncClient`` class once, cache the result.
 
-    Returns ``False`` (not ``None``) when the SDK / API key is missing so
-    repeat calls short-circuit without re-emitting the warning.
+    Returns ``False`` (not ``None``) when the SDK isn't installed so repeat
+    calls short-circuit without re-emitting the warning.  Per-environment
+    API-key gating is the caller's responsibility — this function only
+    answers "is the SDK importable?".
     """
     global _seller_client_cls
     if _seller_client_cls is not None:
         return _seller_client_cls
-
-    api_key = os.environ.get("UNITYSVC_SELLER_API_KEY")
-    if not api_key:
-        _seller_client_cls = False
-        return False
 
     try:
         from unitysvc_sellers import AsyncClient
@@ -390,35 +398,40 @@ def _breakdown_for_services(
 
 def fetch_service_breakdown(
     repo: str,
+    ids: set[str],
+    api_url: str | None,
+    api_key: str | None,
 ) -> tuple[dict[str, int], dict[str, int], dict[str, int], list[str]]:
-    """Per-repo service breakdown, matched via override files.
+    """Per-repo service breakdown for one environment.
 
-    Pulls the repo's declared ``service_id`` set from
-    ``listing.override.json`` files and resolves them through the
-    seller list endpoint with the ``ids=`` filter.  The backend
-    expands ``ids=`` to also return any service whose ``revision_of``
-    matches one of the requested ids (see backend PR
-    unitysvc/unitysvc#915), so revisions come back in the same call
-    — no separate lookup needed.
+    ``ids`` is the precomputed override-file id set for the repo (env-
+    independent — computed once in the metadata phase and reused for
+    every environment).  ``api_url`` / ``api_key`` target one backend.
 
-    Replaces the old "fetch all services + index by id" cache pattern,
-    which had to refetch the entire seller catalog on every run and
-    then walk it twice (once for parent ids, once for revisions).
+    The backend returns the requested services *and* any pending
+    revisions of them in one call (``ids=`` auto-expands to also match
+    ``revision_of=``), see backend PR unitysvc/unitysvc#915.
+
+    Returns empty tuples when ``api_key`` is unset, ``ids`` is empty,
+    or any SDK call fails — so the dashboard still renders, with cells
+    going to ``—`` for the affected (repo, env) cell.
     """
+    if not api_key or not ids:
+        return {}, {}, {}, []
+
     client_cls = _seller_client_class()
     if not client_cls:
         return {}, {}, {}, []
 
-    ids = fetch_repo_service_ids(repo)
-    if not ids:
-        return {}, {}, {}, []
-
-    services = _fetch_services_by_ids(client_cls, ids)
+    services = _fetch_services_by_ids(client_cls, ids, api_url, api_key)
     return _breakdown_for_services(services)
 
 
 def _fetch_services_by_ids(
-    client_cls: Any, ids: set[str]
+    client_cls: Any,
+    ids: set[str],
+    api_url: str | None,
+    api_key: str,
 ) -> list[dict[str, Any]]:
     """Resolve a set of service ids through the seller list endpoint.
 
@@ -427,20 +440,24 @@ def _fetch_services_by_ids(
     match ``revision_of=``).  Cursor-paged in case the id set + its
     revisions exceed the 200-row server cap.
 
-    Returns ``[]`` on any failure so the dashboard still renders —
-    the cells just go to ``—`` for that repo.
+    ``api_url`` empty / ``None`` passes through to the SDK so its
+    default (``https://seller.unitysvc.com/v1``) applies — keeps the
+    production workflow valid even when no ``…_PRODUCTION_API_URL``
+    secret is set.  Returns ``[]`` on any failure so the dashboard
+    still renders — the cells just go to ``—`` for that repo.
     """
-    api_key = os.environ.get("UNITYSVC_SELLER_API_KEY")
-    base_url = os.environ.get("UNITYSVC_SELLER_API_URL")
     from uuid import UUID
 
     uuid_ids = [UUID(sid) for sid in ids]
     page_limit = min(max(len(uuid_ids) * 2, 50), 200)
+    # Empty string from an undefined GitHub secret would otherwise short-
+    # circuit the SDK's "fall back to default" logic — normalize to None.
+    effective_url = api_url or None
 
     async def _fetch() -> list[dict[str, Any]]:
         collected: list[dict[str, Any]] = []
         cursor: str | None = None
-        async with client_cls(api_key=api_key, base_url=base_url) as client:
+        async with client_cls(api_key=api_key, base_url=effective_url) as client:
             while True:
                 page = await client.services.list(
                     ids=uuid_ids, limit=page_limit, cursor=cursor
@@ -463,51 +480,116 @@ def _fetch_services_by_ids(
         return []
 
 
-def collect() -> list[ProviderRow]:
-    """Aggregate every data source into one ``ProviderRow`` per repo."""
+@dataclass
+class RepoBaseMeta:
+    """Env-independent per-repo data — computed once and reused for
+    every environment we render.  Kept separate from ``ProviderRow``
+    so the (per-env) breakdown doesn't trigger N×env-count GitHub /
+    git-clone calls.
+    """
+
+    repo: str
+    is_public: bool
+    is_archived: bool
+    issue_number: int | None
+    issue_title: str
+    issue_type_labels: list[str]
+    ci_conclusion: str | None
+    open_pr_count: int
+    service_ids: set[str]
+
+
+def collect_repo_metadata() -> list[RepoBaseMeta]:
+    """One pass over every env-independent source.
+
+    Includes the github metadata (repos, issues, CI, PR counts) AND the
+    per-repo ``service_id`` set from the override files — that set
+    lives in the repo and is identical across environments, so we read
+    it once even though it'll be looked up against multiple backends.
+    """
     repos = list_services_repos()
     issues = list_tracking_issues()
     repo_to_issue = build_repo_to_issue_map(issues)
 
-    rows: list[ProviderRow] = []
+    metas: list[RepoBaseMeta] = []
     for r in repos:
         repo_name = r["name"]
         issue = repo_to_issue.get(repo_name)
         labels = (issue or {}).get("labels", [])
 
-        # Skip both the seller-API match and the override-file walk
-        # for archived repos — they don't have live services on the
-        # gateway, and the calls would just waste round-trips.
+        # Skip live-data fetches for archived repos — no services on
+        # any backend, no recent CI, no open PRs we care about.
         if r["isArchived"]:
-            lifecycle, visibility, listing_type, service_types = {}, {}, {}, []
+            ci_conclusion = None
+            open_pr_count = 0
+            service_ids: set[str] = set()
         else:
-            lifecycle, visibility, listing_type, service_types = fetch_service_breakdown(
-                repo_name
-            )
+            ci_conclusion = fetch_ci_conclusion(repo_name)
+            open_pr_count = fetch_open_pr_count(repo_name)
+            service_ids = fetch_repo_service_ids(repo_name)
 
-        # Prefer SDK-derived service types (auto-populated, always
-        # current) over issue labels, which require manual upkeep.
-        # Fall back to labels only when the SDK has nothing — archived
-        # repos, or runs without ``UNITYSVC_SELLER_API_KEY``.
-        type_labels = service_types or label_values(labels, "type")
-
-        rows.append(
-            ProviderRow(
+        metas.append(
+            RepoBaseMeta(
                 repo=repo_name,
                 is_public=r["visibility"] == "PUBLIC",
                 is_archived=r["isArchived"],
                 issue_number=(issue or {}).get("number"),
                 issue_title=(issue or {}).get("title") or repo_name[len(REPO_PREFIX) :],
+                issue_type_labels=label_values(labels, "type"),
+                ci_conclusion=ci_conclusion,
+                open_pr_count=open_pr_count,
+                service_ids=service_ids,
+            )
+        )
+
+    return metas
+
+
+def build_rows_for_env(
+    metas: list[RepoBaseMeta],
+    env_name: str,
+    api_url: str | None,
+    api_key: str | None,
+) -> list[ProviderRow]:
+    """One ``ProviderRow`` per repo, with breakdowns fetched from the
+    given backend.  When ``api_key`` is empty, every row's count dicts
+    come back empty (cells render as ``—``) without any network I/O.
+    """
+    rows: list[ProviderRow] = []
+    for meta in metas:
+        if meta.is_archived:
+            lifecycle, visibility, listing_type, service_types = {}, {}, {}, []
+        else:
+            lifecycle, visibility, listing_type, service_types = fetch_service_breakdown(
+                meta.repo, meta.service_ids, api_url, api_key
+            )
+
+        # Prefer SDK-derived service types (auto-populated, always
+        # current) over issue labels.  Fall back to issue labels when
+        # the SDK returned nothing — archived repos, missing key for
+        # this env, or services that haven't been uploaded to this
+        # backend yet.
+        type_labels = service_types or meta.issue_type_labels
+
+        rows.append(
+            ProviderRow(
+                repo=meta.repo,
+                is_public=meta.is_public,
+                is_archived=meta.is_archived,
+                issue_number=meta.issue_number,
+                issue_title=meta.issue_title,
                 type_labels=type_labels,
-                ci_conclusion=fetch_ci_conclusion(repo_name) if not r["isArchived"] else None,
-                open_pr_count=fetch_open_pr_count(repo_name) if not r["isArchived"] else 0,
+                ci_conclusion=meta.ci_conclusion,
+                open_pr_count=meta.open_pr_count,
                 lifecycle_counts=lifecycle,
                 visibility_counts=visibility,
                 listing_type_counts=listing_type,
             )
         )
 
-    # Stable sort by display name so README diffs are minimal.
+    # Stable sort by display name so README diffs are minimal.  Sort
+    # here (not in metadata collection) so the result order matches
+    # the rendering order each renderer expects.
     rows.sort(key=lambda r: r.issue_title.lower())
     return rows
 
@@ -747,34 +829,89 @@ def render_readme_table(rows: list[ProviderRow]) -> str:
     return "\n".join(lines)
 
 
-def render_issue_comment(row: ProviderRow, timestamp: str) -> str:
-    """Sticky-comment body for one tracking issue.
+def render_readme_block(
+    env_tables: list[tuple[str, str]],
+) -> str:
+    """Combine per-env tables into one block for the README markers.
 
-    Includes the marker as the first line so reruns can locate-and-edit
-    instead of accumulating new comments.  Unlike the README, sticky
-    comments include private repos (the issue tracker is private), so
-    the visibility cell here doesn't filter ``private``.
+    Each entry in ``env_tables`` is ``(heading, rendered_table_md)``.
+    Emits ``### <heading>`` above each table; tables are separated by
+    a blank line so the Markdown renders cleanly.
     """
-    type_cell = ", ".join(row.type_labels) if row.type_labels else "—"
+    parts: list[str] = []
+    for i, (heading, table) in enumerate(env_tables):
+        if i:
+            parts.append("")  # blank line between sections
+        parts.append(f"### {heading}")
+        parts.append("")
+        parts.append(table)
+    return "\n".join(parts)
+
+
+def _env_subblock(label: str, row: ProviderRow | None) -> str:
+    """One ``**Env**`` sub-block inside a sticky comment.
+
+    ``row`` may be ``None`` when an entire env's data is missing
+    (e.g. its API key isn't configured) — in which case we still
+    emit the header so the operator can see "production was meant
+    to be here" rather than silently omitting it.
+    """
+    if row is None:
+        return f"**{label}**\n- _(no data — API key not configured)_\n"
+
     visibility_cell = _counts_cell(
         row.visibility_counts,
         primary_order=["public", "unlisted", "private"],
         display_map=_VISIBILITY_DISPLAY,
     )
     return (
-        f"{COMMENT_MARKER}\n"
-        f"**Provider status snapshot** _(auto-synced {timestamp} UTC)_\n\n"
+        f"**{label}**\n"
         f"- Status: {_status_cell(row)}\n"
-        f"- Repo: [`{row.repo}`](https://github.com/{ORG}/{row.repo})"
-        f" — {'public' if row.is_public else 'private'}"
-        f"{' · archived' if row.is_archived else ''}\n"
-        f"- Type: {type_cell}\n"
         f"- Lifecycle: {_lifecycle_cell(row.lifecycle_counts)}\n"
         f"- Visibility: {visibility_cell}\n"
         f"- Listing type: {_listing_type_cell(row.listing_type_counts)}\n"
-        f"- Last CI: {_ci_cell(row.ci_conclusion)}\n"
-        f"- Open PRs: {_pr_cell(row.open_pr_count, row.repo)}\n"
     )
+
+
+def render_issue_comment_dual(
+    env_rows: list[tuple[str, ProviderRow | None]],
+    timestamp: str,
+) -> str:
+    """Sticky-comment body covering every environment for one repo.
+
+    ``env_rows`` is ``[(label, row), …]`` in render order (e.g.
+    ``[("Production", prod_row), ("Staging", staging_row)]``).  The
+    repo-level header section (repo link, type, CI, PRs) is rendered
+    once from the first non-``None`` row — those fields are
+    env-independent — and then each env contributes its own snapshot
+    block below.
+    """
+    # Find the first available row for the env-independent header.
+    header_row = next((r for _, r in env_rows if r is not None), None)
+    if header_row is None:
+        # Should never happen — we always pass at least one row — but
+        # be defensive so a misconfigured run still produces a marker
+        # comment instead of crashing.
+        return (
+            f"{COMMENT_MARKER}\n"
+            f"**Provider status snapshot** _(auto-synced {timestamp} UTC)_\n\n"
+            f"_(no environment data available)_\n"
+        )
+
+    type_cell = ", ".join(header_row.type_labels) if header_row.type_labels else "—"
+    head = (
+        f"{COMMENT_MARKER}\n"
+        f"**Provider status snapshot** _(auto-synced {timestamp} UTC)_\n\n"
+        f"- Repo: [`{header_row.repo}`](https://github.com/{ORG}/{header_row.repo})"
+        f" — {'public' if header_row.is_public else 'private'}"
+        f"{' · archived' if header_row.is_archived else ''}\n"
+        f"- Type: {type_cell}\n"
+        f"- Last CI: {_ci_cell(header_row.ci_conclusion)}\n"
+        f"- Open PRs: {_pr_cell(header_row.open_pr_count, header_row.repo)}\n\n"
+    )
+
+    subblocks = "\n".join(_env_subblock(label, row) for label, row in env_rows)
+    return head + subblocks
 
 
 # ---------------------------------------------------------------------------
@@ -844,6 +981,17 @@ def update_sticky_comment(issue_number: int, body: str) -> None:
 # ---------------------------------------------------------------------------
 
 
+# Environments rendered, in display order (production first — operators
+# look at the canonical catalog first, then the staging preview).  Each
+# entry is ``(heading, url_env_var, key_env_var)``; the script reads
+# those env vars at run time, so leaving either pair unset is a
+# supported degraded mode (cells render as "—").
+ENVIRONMENTS: list[tuple[str, str, str]] = [
+    ("Production", "UNITYSVC_SELLER_PRODUCTION_API_URL", "UNITYSVC_SELLER_PRODUCTION_API_KEY"),
+    ("Staging", "UNITYSVC_SELLER_STAGING_API_URL", "UNITYSVC_SELLER_STAGING_API_KEY"),
+]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
     parser.add_argument(
@@ -858,8 +1006,27 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    rows = collect()
-    table = render_readme_table(rows)
+    # Phase 1: env-independent metadata (repos, issues, CI, PRs,
+    # override-file ids).  One pass.
+    metas = collect_repo_metadata()
+
+    # Phase 2: per-env breakdown rows.  One pass per environment;
+    # missing API key for an env yields empty count dicts (no I/O).
+    env_rows: list[tuple[str, list[ProviderRow]]] = []
+    for heading, url_var, key_var in ENVIRONMENTS:
+        api_url = os.environ.get(url_var) or None
+        api_key = os.environ.get(key_var) or None
+        if not api_key:
+            print(f"  ⚠ {heading}: {key_var} unset; cells will render as —")
+        env_rows.append(
+            (heading, build_rows_for_env(metas, heading, api_url, api_key))
+        )
+
+    # Render the README block — two tables under ``###`` sub-headings,
+    # one per environment.
+    block = render_readme_block(
+        [(heading, render_readme_table(rows)) for heading, rows in env_rows]
+    )
 
     # Timestamp is generated once per run so README and all sticky
     # comments share the same value.
@@ -868,20 +1035,34 @@ def main() -> int:
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")
 
     if args.dry_run:
-        print("=== README table ===")
-        print(table)
+        print("=== README block ===")
+        print(block)
         print()
-        for row in rows:
-            if row.issue_number is None:
+        # Index rows by repo for sticky-comment rendering — env_rows is
+        # already per-env, so we need to pivot to per-repo.
+        by_repo: dict[str, list[tuple[str, ProviderRow | None]]] = {}
+        for heading, rows in env_rows:
+            for r in rows:
+                by_repo.setdefault(r.repo, []).append((heading, r))
+        # Use the first env's row ordering as the iteration order so
+        # dry-run output is stable across runs.
+        order = [r.repo for r in env_rows[0][1]]
+        for repo_name in order:
+            entries = by_repo.get(repo_name, [])
+            issue_number = next(
+                (r.issue_number for _, r in entries if r and r.issue_number is not None),
+                None,
+            )
+            if issue_number is None:
                 continue
-            print(f"=== Comment on issue #{row.issue_number} ({row.repo}) ===")
-            print(render_issue_comment(row, timestamp))
+            print(f"=== Comment on issue #{issue_number} ({repo_name}) ===")
+            print(render_issue_comment_dual(entries, timestamp))
             print()
         return 0
 
     # README write
     readme = README_PATH.read_text()
-    new_readme = replace_section(readme, table)
+    new_readme = replace_section(readme, block)
     new_readme = re.sub(
         r"_Last synced: [^_]*_",
         f"_Last synced: {timestamp} UTC_",
@@ -899,15 +1080,27 @@ def main() -> int:
         print("Skipping sticky comments (--skip-comments)")
         return 0
 
-    for row in rows:
-        if row.issue_number is None:
-            print(f"  ⊘ {row.repo}: no tracking issue mapped")
+    # Pivot env_rows (per-env lists) to per-repo (one entry per env).
+    by_repo: dict[str, list[tuple[str, ProviderRow | None]]] = {}
+    for heading, rows in env_rows:
+        for r in rows:
+            by_repo.setdefault(r.repo, []).append((heading, r))
+
+    # Iterate in the first env's sorted order for deterministic output.
+    for r in env_rows[0][1]:
+        entries = by_repo.get(r.repo, [])
+        issue_number = next(
+            (er.issue_number for _, er in entries if er and er.issue_number is not None),
+            None,
+        )
+        if issue_number is None:
+            print(f"  ⊘ {r.repo}: no tracking issue mapped")
             continue
         try:
-            update_sticky_comment(row.issue_number, render_issue_comment(row, timestamp))
-            print(f"  ✓ {row.repo} → #{row.issue_number}")
+            update_sticky_comment(issue_number, render_issue_comment_dual(entries, timestamp))
+            print(f"  ✓ {r.repo} → #{issue_number}")
         except RuntimeError as err:
-            print(f"  ✗ {row.repo} → #{row.issue_number}: {err}")
+            print(f"  ✗ {r.repo} → #{issue_number}: {err}")
 
     return 0
 
