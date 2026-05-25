@@ -10,9 +10,11 @@ where status / type / reselling labels capture the operational state.
 
 ## Provider Catalog
 
-The table below auto-syncs every six hours from the issue-tracker labels and
+The tables below auto-sync every six hours from the issue-tracker labels and
 the per-repo CI runs.  See [`.github/workflows/sync-dashboard.yml`](https://github.com/unitysvc-labs/.github/blob/main/.github/workflows/sync-dashboard.yml).
-Private (in-development) providers are tracked but not listed here.
+One table per environment: **Production** is the canonical catalog (what end
+users see); **Staging** previews changes before they ship.  Private
+(in-development) providers are tracked but not listed here.
 
 <!-- providers-start -->
 | Status | Provider | Repo | Type | Lifecycle | Visibility | Listing type | CI | Open PRs |
@@ -51,12 +53,10 @@ _Last synced: 2026-05-25 01:57 UTC_
 - **Visibility** — catalog-visibility counts: `published` (= `public`)
   and `unlisted`.  Private services are tracked but not shown on this
   public README.
-- **Mode** — enrollment-mode counts: `managed` (seller provides upstream
-  credentials), `byok` (customer supplies API key), `byoe` (customer
-  supplies endpoint + key).  *Currently unpopulated — see
-  `fetch_mode_counts` in `scripts/sync_dashboard.py` for the open
-  question on how to derive it.*
-- **Validate** — most recent CI run conclusion on `main`: ✅ success ·
+- **Listing type** — enrollment-mode counts: `managed` (seller provides
+  upstream credentials), `byok` (customer supplies API key), `byoe`
+  (customer supplies endpoint + key).
+- **CI** — most recent CI run conclusion on `main`: ✅ success ·
   ❌ failure · 🟡 in-progress · ⚪ no-runs / cancelled.
 - **Open PRs** — open pull requests on the repo.  Auto-update PRs from
   `populate-services.yml` count too — that's the signal a refresh is
