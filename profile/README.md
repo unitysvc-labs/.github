@@ -33,13 +33,13 @@ users see); **Staging** previews changes before they ship.  Private
 | ⚪ | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | — | — | — | — | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
 | ⚪ | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | — | — | — | — | ✅ | — |
-| 🔴 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 rejected | 1 published | 1 managed | ✅ | — |
+| 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 managed | ✅ | — |
 | 🔴 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | ❌ | [2](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🟡 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-parasail/pulls) |
 | ⚪ | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | ⚪ | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | — | — | — | — | ✅ | — |
-| — | **Total** (18 repos) | — | — | 1 rejected | 1 published | 1 managed | — | 9 |
+| — | **Total** (18 repos) | — | — | 1 active | 1 published | 1 managed | — | 9 |
 
 ### Staging
 
@@ -66,7 +66,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (18 repos) | — | — | — | — | — | — | 9 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-25 19:11 UTC_
+_Last synced: 2026-05-26 01:50 UTC_
 
 ### Column legend
 
