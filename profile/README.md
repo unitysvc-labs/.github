@@ -36,10 +36,11 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 managed | ✅ | — |
 | 🟡 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🟡 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-parasail/pulls) |
+| 🔴 | resp | [`unitysvc-services-resp`](https://github.com/unitysvc-labs/unitysvc-services-resp) | proxy | 1 review · 5 rejected | 6 published | 6 managed | ✅ | — |
 | ⚪ | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🔴 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email | 2 draft | 2 unlisted | 1 byok · 1 managed | ❌ | — |
-| — | **Total** (18 repos) | — | — | 1 active · 2 draft | 1 published · 2 unlisted | 1 byok · 2 managed | — | 10 |
+| — | **Total** (19 repos) | — | — | 1 active · 2 draft · 1 review · 5 rejected | 7 published · 2 unlisted | 1 byok · 8 managed | — | 10 |
 
 ### Staging
 
@@ -60,13 +61,14 @@ users see); **Staging** previews changes before they ship.  Private
 | ⚪ | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | — | — | — | — | ✅ | — |
 | 🟡 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | — | — | — | — | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🟡 | [Parasail](https://github.com/unitysvc-labs/unitysvc-labs/issues/34) | [`unitysvc-services-parasail`](https://github.com/unitysvc-labs/unitysvc-services-parasail) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-parasail/pulls) |
+| ⚪ | resp | [`unitysvc-services-resp`](https://github.com/unitysvc-labs/unitysvc-services-resp) | — | — | — | — | ✅ | — |
 | ⚪ | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🔴 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | — | — | — | — | ❌ | — |
-| — | **Total** (18 repos) | — | — | — | — | — | — | 10 |
+| — | **Total** (19 repos) | — | — | — | — | — | — | 10 |
 <!-- providers-end -->
 
-_Last synced: 2026-05-31 18:58 UTC_
+_Last synced: 2026-06-01 02:07 UTC_
 
 ### Column legend
 
