@@ -68,7 +68,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (19 repos) | — | — | 139 active · 86 rejected | 225 published | 122 byok · 103 managed | — | 11 |
 <!-- providers-end -->
 
-_Last synced: 2026-06-01 17:09 UTC_
+_Last synced: 2026-06-01 21:19 UTC_
 
 ### Column legend
 
