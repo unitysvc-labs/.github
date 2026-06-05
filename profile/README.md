@@ -48,7 +48,7 @@ users see); **Staging** previews changes before they ship.  Private
 | Status | Provider | Repo | Type | Lifecycle | Visibility | Listing type | CI | Open PRs |
 |---|---|---|---|---|---|---|---|---|
 | 🟡 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 3 active · 3 draft revisions | 3 published | 3 managed | ✅ | — |
-| 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
+| 🔴 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 1 draft · 8 rejected | 8 published · 1 unlisted | 9 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
 | 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 4 active · 4 draft revisions | 4 published | 4 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
 | 🔴 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 16 active | 16 published | 16 byok | ❌ | — |
 | 🔴 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | llm | 21 draft | 21 unlisted | 21 managed | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
@@ -67,10 +67,10 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | content | 7 active · 1 rejected · 2 rejected revisions | 8 published | 3 byok · 5 managed | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 7 active · 7 draft revisions | 7 published | 7 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🟡 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email, notification | 6 active · 1 rejected revision | 6 published | 4 byok · 2 byoe | ✅ | — |
-| — | **Total** (20 repos) | — | — | 174 active · 52 draft · 58 draft revisions · 267 rejected · 8 rejected revisions | 471 published · 22 unlisted | 148 byok · 232 byoe · 113 managed | — | 13 |
+| — | **Total** (20 repos) | — | — | 174 active · 53 draft · 58 draft revisions · 275 rejected · 8 rejected revisions | 479 published · 23 unlisted | 157 byok · 232 byoe · 113 managed | — | 13 |
 <!-- providers-end -->
 
-_Last synced: 2026-06-05 09:00 UTC_
+_Last synced: 2026-06-05 14:16 UTC_
 
 ### Column legend
 
