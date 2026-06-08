@@ -29,8 +29,8 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-deepseek/pulls) |
 | 🟡 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | llm, image | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-fireworks/pulls) |
 | 🟡 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-groq/pulls) |
-| 🔴 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 2 draft | 2 unlisted | 1 byok · 1 byoe | ✅ | — |
-| 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | — | — | — | — | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
+| 🔴 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 2 review | 2 unlisted | 1 byok · 1 byoe | ✅ | — |
+| 🟡 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
 | 🟡 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-inception/pulls) |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
@@ -41,7 +41,7 @@ users see); **Staging** previews changes before they ship.  Private
 | ⚪ | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🟡 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email, notification | 5 active · 1 rejected | 6 published | 4 byok · 2 byoe | ✅ | — |
-| — | **Total** (20 repos) | — | — | 11 active · 2 draft · 1 rejected | 12 published · 2 unlisted | 5 byok · 3 byoe · 6 managed | — | 14 |
+| — | **Total** (20 repos) | — | — | 11 active · 2 review · 1 rejected | 12 published · 2 unlisted | 5 byok · 3 byoe · 6 managed | — | 14 |
 
 ### Staging
 
@@ -56,7 +56,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🔴 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | llm | 4 draft | 4 unlisted | 4 managed | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-fireworks/pulls) |
 | 🔴 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 16 draft | 16 unlisted | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-groq/pulls) |
 | 🟢 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 2 active | 2 published | 1 byok · 1 byoe | ✅ | — |
-| 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | — | — | — | — | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
+| 🟡 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
 | 🔴 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 3 draft | 3 unlisted | 3 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-inception/pulls) |
 | 🔴 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 59 draft | 59 unlisted | 59 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
@@ -70,7 +70,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (20 repos) | — | — | 6 active · 212 draft · 1 rejected | 7 published · 212 unlisted | 124 byok · 3 byoe · 92 managed | — | 14 |
 <!-- providers-end -->
 
-_Last synced: 2026-06-08 02:08 UTC_
+_Last synced: 2026-06-08 10:10 UTC_
 
 ### Column legend
 
