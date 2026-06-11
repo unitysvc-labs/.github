@@ -23,7 +23,7 @@ users see); **Staging** previews changes before they ship.  Private
 |---|---|---|---|---|---|---|---|---|
 | ⚪ | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | — | — | — | ✅ | — |
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
-| 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
+| 🔴 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | — | — | — | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
 | 🔴 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | — | — | — | — | ❌ | — |
 | 🟡 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
 | 🟡 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-deepseek/pulls) |
@@ -49,7 +49,7 @@ users see); **Staging** previews changes before they ship.  Private
 |---|---|---|---|---|---|---|---|---|
 | 🔴 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 3 draft | 3 unlisted | 3 managed | ✅ | — |
 | 🔴 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 9 draft | 9 unlisted | 9 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
-| 🔴 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 4 draft | 4 unlisted | 4 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
+| 🔴 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 4 draft | 4 unlisted | 4 byok | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
 | 🔴 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 16 draft | 16 unlisted | 16 byok | ❌ | — |
 | 🟡 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
 | 🔴 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 2 draft | 2 unlisted | 2 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-deepseek/pulls) |
@@ -70,7 +70,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (20 repos) | — | — | 6 active · 212 draft · 1 rejected | 7 published · 212 unlisted | 124 byok · 3 byoe · 92 managed | — | 14 |
 <!-- providers-end -->
 
-_Last synced: 2026-06-11 02:09 UTC_
+_Last synced: 2026-06-11 09:58 UTC_
 
 ### Column legend
 
