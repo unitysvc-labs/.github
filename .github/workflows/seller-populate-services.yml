@@ -59,8 +59,8 @@ jobs:
         id: check_changes
         run: |
           echo "Checking for changes in specs/ directory..."
-          git add data/
-          if git diff --cached --exit-code data/; then
+          git add specs/
+          if git diff --cached --exit-code specs/; then
             echo "No changes detected in specs/ directory"
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
