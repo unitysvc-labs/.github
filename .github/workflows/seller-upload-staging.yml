@@ -38,6 +38,7 @@ jobs:
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_STAGING_API_KEY }}
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_STAGING_API_URL }}
           ALL_SECRETS_JSON: ${{ toJSON(secrets) }}
+          ALL_VARS_JSON: ${{ toJSON(vars) }}
         run: |
           set -euo pipefail
           # See seller-upload-production.yml for the rationale; `|| true` keeps a
@@ -60,7 +61,11 @@ jobs:
             [ -z "$name" ] && continue
             value="$(printf '%s' "$ALL_SECRETS_JSON" | jq -r --arg n "$name" '.[$n] // empty')"
             if [ -z "$value" ]; then
-              echo "::warning::Secret '$name' referenced in the repo has no value in GitHub secrets; skipping."
+              # Fall back to a repo variable (non-sensitive config); secrets win.
+              value="$(printf '%s' "$ALL_VARS_JSON" | jq -r --arg n "$name" '.[$n] // empty')"
+            fi
+            if [ -z "$value" ]; then
+              echo "::warning::Secret '$name' referenced in the repo has no value in GitHub secrets or variables; skipping."
               missing=$((missing+1))
               continue
             fi
