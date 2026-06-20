@@ -41,9 +41,9 @@ jobs:
           ALL_SECRETS_JSON: ${{ toJSON(secrets) }}
         run: |
           set -euo pipefail
-          # Auto-derive the seller-secret names this repo needs from its data
+          # Auto-derive the seller-secret names this repo needs from its source
           # files: every ${ customer_secrets.X } and ${ secrets.X } reference
-          # in any offering.json / listing.json. Templated forms like
+          # under specs/, templates/, or data/. Templated forms like
           # ${ customer_secrets.{{ params.X }} } are NOT matched directly —
           # they're covered transitively when the per-service user_parameters_schema
           # defaults the param to the literal name used by the non-plus variant.
@@ -53,11 +53,11 @@ jobs:
           # `set -o pipefail` and fails the step before the empty-names guard.
           names="$( { grep -rEhno \
             '\$\{\s*(customer_secrets|secrets)\.[A-Za-z_][A-Za-z0-9_]*' \
-            data/ || true; } \
+            specs/ templates/ data/ 2>/dev/null || true; } \
             | sed -E 's/.*(customer_secrets|secrets)\.([A-Za-z_][A-Za-z0-9_]*).*/\2/' \
             | sort -u)"
           if [ -z "$names" ]; then
-            echo "No secret references found under data/."
+            echo "No secret references found under specs/ templates/ data/."
             exit 0
           fi
           echo "Found secret references:"
@@ -68,7 +68,7 @@ jobs:
             [ -z "$name" ] && continue
             value="$(printf '%s' "$ALL_SECRETS_JSON" | jq -r --arg n "$name" '.[$n] // empty')"
             if [ -z "$value" ]; then
-              echo "::warning::Secret '$name' referenced under data/ has no value in GitHub secrets; skipping."
+              echo "::warning::Secret '$name' referenced in the repo has no value in GitHub secrets; skipping."
               missing=$((missing+1))
               continue
             fi
