@@ -22,6 +22,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # Check out the PR's base branch (main) rather than the detached
+          # merge ref, so the commit-back step can `git push` the service_id
+          # sidecars. The merge is already in base by the time `closed` fires.
+          ref: ${{ github.base_ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -80,19 +85,23 @@ jobs:
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_STAGING_API_KEY }}
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_STAGING_API_URL }}
         run: |
-          echo "Uploading services to staging..."
-          usvc_seller specs upload
+          echo "Uploading + submitting services to staging..."
+          # --submit folds the submit-for-review (validate -> pending -> run
+          # tests) into the ingest task, so no separate submit step is needed.
+          usvc_seller specs upload --submit
 
-      - name: Commit back service.json
+      - name: Commit back service_id sidecars
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          find specs -name "service.json" -exec git add {} +
+          # Folder specs write `<service>/service.json`; param-file specs write
+          # `<name>.service.json` beside the param file. Stage both.
+          find specs -type f \( -name 'service.json' -o -name '*.service.json' \) -exec git add {} +
           if ! git diff --cached --quiet; then
-            git commit -m "ci: write back service.json (service_id) [skip ci]"
+            git commit -m "ci: write back service_id sidecars [skip ci]"
             git push
           else
-            echo "No service.json changed"
+            echo "No service_id sidecars changed"
           fi
 
       - name: Publish services
@@ -102,14 +111,6 @@ jobs:
         run: |
           echo "Publishing services to make them visible in the catalog..."
           usvc_seller services set-visibility public --local-ids --data-dir specs --yes
-
-      - name: Submit services for review
-        env:
-          UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_STAGING_API_KEY }}
-          UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_STAGING_API_URL }}
-        run: |
-          echo "Submitting services for review..."
-          usvc_seller services submit --local-ids --data-dir specs --yes
 
       - name: Upload summary
         if: always()
