@@ -88,8 +88,10 @@ jobs:
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_KEY }}
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_URL }}
         run: |
-          echo "Uploading services to production..."
-          usvc_seller specs upload
+          echo "Uploading + submitting services to production..."
+          # --submit folds the submit-for-review (validate -> pending -> run
+          # tests) into the ingest task, so no separate submit step is needed.
+          usvc_seller specs upload --submit
 
       - name: Publish services
         env:
@@ -98,14 +100,6 @@ jobs:
         run: |
           echo "Publishing services to make them visible in the catalog..."
           usvc_seller services set-visibility public --local-ids --data-dir specs --yes
-
-      - name: Submit services for review
-        env:
-          UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_KEY }}
-          UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_URL }}
-        run: |
-          echo "Submitting services for review..."
-          usvc_seller services submit --local-ids --data-dir specs --yes
 
       - name: Upload summary
         if: always()
