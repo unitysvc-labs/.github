@@ -23,6 +23,9 @@ jobs:
   populate-services:
     name: Populate Services Data
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
