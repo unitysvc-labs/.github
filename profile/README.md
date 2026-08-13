@@ -23,7 +23,7 @@ users see); **Staging** previews changes before they ship.  Private
 |---|---|---|---|---|---|---|---|---|
 | 🟡 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-aionlabs/pulls) |
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
-| ⚪ | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ✅ | — |
+| 🟡 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-bedrock/pulls) |
 | ⚪ | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | — | — | — | ✅ | — |
 | 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | — | — | — | — | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | ⚪ | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ✅ | — |
@@ -43,7 +43,7 @@ users see); **Staging** previews changes before they ship.  Private
 | ⚪ | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
 | ⚪ | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | — | — | — | ✅ | — |
 | ⚪ | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | — | — | — | — | ✅ | — |
-| — | **Total** (22 repos) | — | — | — | — | — | — | 12 |
+| — | **Total** (22 repos) | — | — | — | — | — | — | 13 |
 
 ### Staging
 
@@ -51,7 +51,7 @@ users see); **Staging** previews changes before they ship.  Private
 |---|---|---|---|---|---|---|---|---|
 | 🟡 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-aionlabs/pulls) |
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
-| ⚪ | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ✅ | — |
+| 🟡 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-bedrock/pulls) |
 | ⚪ | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | — | — | — | ✅ | — |
 | 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | — | — | — | — | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | ⚪ | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ✅ | — |
@@ -71,10 +71,10 @@ users see); **Staging** previews changes before they ship.  Private
 | ⚪ | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | — | — | — | — | ✅ | — |
 | ⚪ | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | — | — | — | — | ✅ | — |
 | ⚪ | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | — | — | — | — | ✅ | — |
-| — | **Total** (22 repos) | — | — | — | — | — | — | 12 |
+| — | **Total** (22 repos) | — | — | — | — | — | — | 13 |
 <!-- providers-end -->
 
-_Last synced: 2026-08-13 12:38 UTC_
+_Last synced: 2026-08-13 18:43 UTC_
 
 ### Column legend
 
