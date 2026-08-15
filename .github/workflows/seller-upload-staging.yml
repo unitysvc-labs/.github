@@ -118,7 +118,13 @@ jobs:
           find specs -type f \( -name 'service.json' -o -name '*.service.json' \) -exec git add {} +
           if ! git diff --cached --quiet; then
             git commit -m "ci: write back service_id sidecars [skip ci]"
-            git push
+            # A protected default branch rejects the bot's push (GH006). The
+            # upload itself already succeeded, so warn and carry on rather than
+            # failing the job — the sidecars can be committed by hand, or the
+            # repo can grant the Actions app a pull-request bypass.
+            if ! git push; then
+              echo "::warning::Could not push the service_id sidecars — the branch is protected against the Actions bot. The upload succeeded; commit specs/**/service.json by hand, or allow github-actions to bypass the pull-request rule."
+            fi
           else
             echo "No service_id sidecars changed"
           fi
