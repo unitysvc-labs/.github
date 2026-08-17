@@ -23,7 +23,7 @@ users see); **Staging** previews changes before they ship.  Private
 |---|---|---|---|---|---|---|---|---|
 | 🟡 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-aionlabs/pulls) |
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
-| ⚪ | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ✅ | — |
+| 🔴 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ❌ | — |
 | 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
 | 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | — | — | — | — | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | 🟡 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
@@ -53,7 +53,7 @@ users see); **Staging** previews changes before they ship.  Private
 |---|---|---|---|---|---|---|---|---|
 | 🟡 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-aionlabs/pulls) |
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
-| ⚪ | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ✅ | — |
+| 🔴 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | — | — | — | — | ❌ | — |
 | 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
 | 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | — | — | — | — | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | 🟡 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
@@ -78,7 +78,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (24 repos) | — | — | — | — | — | — | 18 |
 <!-- providers-end -->
 
-_Last synced: 2026-08-17 00:25 UTC_
+_Last synced: 2026-08-17 06:25 UTC_
 
 ### Column legend
 
