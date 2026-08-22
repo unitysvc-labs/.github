@@ -98,6 +98,17 @@ class ServiceIdDiscoveryTests(unittest.TestCase):
     def test_empty_repo_yields_empty_set(self) -> None:
         self.assertEqual(sd._service_ids_from_sidecars(self.root), set())
 
+    def test_malformed_sidecar_warning_names_the_path(self) -> None:
+        """"service.json" alone identifies nothing — report where it lives."""
+        import contextlib
+        import io
+
+        self._write("services/specs/http-relay/service.json", "{not valid json")
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            sd._service_ids_from_sidecars(self.root)
+        self.assertIn("services/specs/http-relay/service.json", buf.getvalue())
+
 
 class BreakdownTests(unittest.TestCase):
     """Counting backend service records into the table's three count cells."""

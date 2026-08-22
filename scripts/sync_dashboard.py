@@ -333,7 +333,13 @@ def _service_ids_from_sidecars(root: Path) -> set[str]:
         try:
             data = json.loads(path.read_text())
         except (OSError, ValueError) as exc:
-            print(f"  ⚠ unreadable sidecar {path.name}: {exc}")
+            # Name the file relative to the clone root: the bare filename
+            # is almost always "service.json", which identifies nothing.
+            try:
+                where = path.relative_to(root)
+            except ValueError:  # pragma: no cover — path is always under root
+                where = path
+            print(f"  ⚠ unreadable sidecar {where}: {exc}")
             continue
         if not isinstance(data, dict):
             continue
