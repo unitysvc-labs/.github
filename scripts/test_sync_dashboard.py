@@ -18,12 +18,27 @@ Run with::
 
 from __future__ import annotations
 
+import contextlib
+import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
 import sync_dashboard as sd
+
+
+@contextlib.contextmanager
+def captured_stdout() -> "contextlib.AbstractContextManager[io.StringIO]":
+    """Swallow the module's diagnostic prints.
+
+    Without this the warnings the tests deliberately provoke land in the
+    CI log looking like findings about a real repo — which is precisely
+    the confusion these warnings exist to prevent.
+    """
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        yield buf
 
 
 class ServiceIdDiscoveryTests(unittest.TestCase):
@@ -93,19 +108,17 @@ class ServiceIdDiscoveryTests(unittest.TestCase):
         self._write("services/specs/list/service.json", [1, 2, 3])
         self._write("services/specs/idless/service.json", {"status": "created"})
         self._write("services/specs/good/service.json", {"service_id": "kept"})
-        self.assertEqual(sd._service_ids_from_sidecars(self.root), {"kept"})
+        with captured_stdout():
+            ids = sd._service_ids_from_sidecars(self.root)
+        self.assertEqual(ids, {"kept"})
 
     def test_empty_repo_yields_empty_set(self) -> None:
         self.assertEqual(sd._service_ids_from_sidecars(self.root), set())
 
     def test_malformed_sidecar_warning_names_the_path(self) -> None:
         """"service.json" alone identifies nothing — report where it lives."""
-        import contextlib
-        import io
-
         self._write("services/specs/http-relay/service.json", "{not valid json")
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
+        with captured_stdout() as buf:
             sd._service_ids_from_sidecars(self.root)
         self.assertIn("services/specs/http-relay/service.json", buf.getvalue())
 
