@@ -15,12 +15,13 @@ Sources
    independent ``(API_URL, API_KEY)`` pairs.  Each environment yields
    its own table on the README and its own sub-block on the per-issue
    sticky comment.  For each repo we read the ``service_id`` set from
-   its ``listing.override.{json,toml}`` files (the canonical
-   ``listing_v1`` walk) and look those IDs up on each backend — same
-   IDs are expected to exist in staging and production (lab repos
-   share IDs across environments) but cells degrade to "—" when a
-   backend is unreachable or the API key for that environment is
-   unset.  Per-env env vars:
+   the identity sidecars ``usvc_seller`` commits back after upload
+   (``specs/<name>.service.json`` in the template + param layout, or
+   ``<service_dir>/service.json`` in the per-folder layout) and look
+   those IDs up on each backend — same IDs are expected to exist in
+   staging and production (lab repos share IDs across environments)
+   but cells degrade to "—" when a backend is unreachable or the API
+   key for that environment is unset.  Per-env env vars:
      - production: ``UNITYSVC_SELLER_PRODUCTION_API_KEY`` (required),
        ``UNITYSVC_SELLER_PRODUCTION_API_URL`` (optional — defaults to
        ``https://seller.unitysvc.com/v1``).
@@ -103,13 +104,17 @@ class ProviderRow:
     type_labels: list[str]  # e.g. ["llm", "image"] from the tracking issue
     ci_conclusion: str | None  # "success" / "failure" / "in_progress" / None
     open_pr_count: int
-    # Service-level signals from ``usvc_seller services list``.  Populated
-    # when ``UNITYSVC_SELLER_API_KEY`` is set; empty dicts otherwise (cells
-    # render as ``—``).  Counts are by enum value.  Unknown / extra keys
+    # Service-level signals from the seller API.  Populated when this
+    # environment's ``UNITYSVC_SELLER_<ENV>_API_KEY`` is set *and* the repo
+    # yielded service ids; empty dicts otherwise (cells render as ``—``).
+    # Counts are by enum value.  Unknown / extra keys
     # pass through so future enum values automatically appear in the table.
     lifecycle_counts: dict[str, int]  # by ServiceStatusEnum value
     visibility_counts: dict[str, int]  # by ServiceVisibilityEnum value
-    listing_type_counts: dict[str, int]  # by listing_type (regular / byok / self_hosted)
+    # By channel type (managed / byok / byoe / enrollable).  A service
+    # offering several channels contributes to several buckets, so these
+    # counts can sum past the service count — see _breakdown_for_services.
+    listing_type_counts: dict[str, int]
 
 
 def gh(*args: str) -> str:
@@ -297,33 +302,58 @@ def _seller_client_class() -> Any:
     return AsyncClient
 
 
+def _service_ids_from_sidecars(root: Path) -> set[str]:
+    """Backend-assigned ``service_id`` values recorded under ``root``.
+
+    ``usvc_seller`` writes the id the backend assigned at upload time
+    into an *identity sidecar* next to the spec files, and commits it
+    back.  Two shapes exist depending on the repo's layout:
+
+    - flat ``specs/`` layout (template + param files):
+      ``specs/<name>.service.json``
+    - per-folder layout: ``<service_dir>/service.json``
+
+    Repos mid-migration carry both, so we take the union.
+
+    Listing files are deliberately *not* consulted.  They used to be
+    the source (via a ``schema: listing_v1`` walk) but no longer are:
+    template-driven repos render ``listing.json`` from
+    ``templates/listing.json.j2`` at command time and commit nothing,
+    and the listings that *are* committed carry neither a ``schema``
+    field nor a ``service_id``.  The sidecar is now the only committed
+    record of the backend id.
+
+    Malformed or id-less sidecars are skipped individually so one bad
+    file can't blank out a whole repo.
+    """
+    ids: set[str] = set()
+    # ``rglob("*.service.json")`` does not match a bare ``service.json``
+    # (the glob requires at least the dot), so both patterns are needed.
+    for path in (*root.rglob("service.json"), *root.rglob("*.service.json")):
+        try:
+            data = json.loads(path.read_text())
+        except (OSError, ValueError) as exc:
+            print(f"  ⚠ unreadable sidecar {path.name}: {exc}")
+            continue
+        if not isinstance(data, dict):
+            continue
+        sid = data.get("service_id")
+        if sid:
+            ids.add(str(sid))
+    return ids
+
+
 def fetch_repo_service_ids(repo: str) -> set[str]:
-    """Service-IDs declared by this repo, discovered via the canonical
-    listing_v1 schema walk.
+    """Service-IDs declared by this repo, read from its identity sidecars.
 
-    Shallow-clones the repo into a temp dir and runs
-    ``find_files_by_schema`` from ``unitysvc-core`` — the same code
-    path that powers ``usvc_seller services list --local-ids``.  This
-    matters because:
-
-    - listing files are identified by their ``schema`` field, not by
-      filename.  A folder may contain multiple listings (and therefore
-      multiple ``listing[.override].{json,toml}`` files); a filename-
-      based walk hard-codes one shape and silently drops everything
-      else (e.g. ``.toml`` overrides).
-    - override files are merged into their base listing automatically,
-      so the resulting ``data`` dict carries the final ``service_id``
-      regardless of which file declared it.
+    Shallow-clones the repo into a temp dir and collects every
+    ``service_id`` recorded by ``usvc_seller`` — see
+    :func:`_service_ids_from_sidecars` for why the sidecars (and not
+    the listing files) are the source of truth.
 
     Returns ``set()`` on any failure so the dashboard still renders —
     the cells just go to ``—`` for that repo.
     """
-    try:
-        from unitysvc_core.utils import find_files_by_schema
-    except ImportError as exc:
-        print(f"  ⚠ unitysvc_core not installed ({exc}); skipping {repo}")
-        return set()
-
     import shutil
     import tempfile
 
@@ -346,11 +376,16 @@ def fetch_repo_service_ids(repo: str) -> set[str]:
             print(f"  ⚠ {repo}: clone failed: {result.stderr.strip()}")
             return set()
 
-        ids: set[str] = set()
-        for _path, _fmt, data in find_files_by_schema(clone_dir, "listing_v1"):
-            sid = data.get("service_id")
-            if sid:
-                ids.add(str(sid))
+        ids = _service_ids_from_sidecars(clone_dir)
+        if not ids:
+            # Loud on purpose: an empty id set silently blanks this
+            # repo's Lifecycle / Visibility / Listing-type cells, which
+            # is exactly how the previous (stale) discovery rotted
+            # unnoticed across months of green runs.
+            print(
+                f"  ⚠ {repo}: no service_id found in any "
+                f"service.json / *.service.json sidecar — count cells will render as —"
+            )
         return ids
     finally:
         shutil.rmtree(tmp_root, ignore_errors=True)
@@ -386,9 +421,25 @@ def _breakdown_for_services(
         # Listing type follows the same revision rule as visibility:
         # revisions piggy-back on their parent's listing, so counting
         # them separately would double-count the same listed offering.
-        lt = svc.get("listing_type")
-        if lt and not svc.get("revision_of"):
-            listing_type[lt] = listing_type.get(lt, 0) + 1
+        #
+        # The backend renamed the scalar ``listing_type`` to the list
+        # ``channel_types`` when it widened the concept: a service is
+        # reachable through one or more channels, each with its own
+        # type (``managed`` / ``byok`` / ``byoe`` / ``enrollable``).  A
+        # service offering both a managed and a BYOK channel therefore
+        # counts once in each bucket — the cell describes channels on
+        # offer, not a partition of services.  The retired scalar is
+        # still read so an older backend keeps rendering.
+        if not svc.get("revision_of"):
+            channel_types = svc.get("channel_types") or []
+            if isinstance(channel_types, str):  # defensive: scalar from an older shape
+                channel_types = [channel_types]
+            legacy = svc.get("listing_type")
+            if legacy and not channel_types:
+                channel_types = [legacy]
+            for ct in channel_types:
+                if ct:
+                    listing_type[ct] = listing_type.get(ct, 0) + 1
         st = svc.get("service_type")
         if st:
             types.add(st)
@@ -743,12 +794,15 @@ def _visibility_cell(counts: dict[str, int]) -> str:
 
 
 def _listing_type_cell(counts: dict[str, int]) -> str:
-    # ``self_hosted`` is the SDK enum value; operators say "byoe"
-    # (bring-your-own-endpoint) — surface the operator term.
+    # Current channel-type vocabulary, in operator priority order:
+    # ``managed`` (seller's key — the monetized default), ``byok``,
+    # ``byoe``, ``enrollable``.  The two retired names are mapped onto
+    # their replacements so a mixed-vintage backend renders one
+    # consistent vocabulary instead of both.
     return _counts_cell(
         counts,
-        primary_order=["regular", "byok", "self_hosted"],
-        display_map={"self_hosted": "byoe"},
+        primary_order=["managed", "byok", "byoe", "enrollable"],
+        display_map={"regular": "managed", "self_hosted": "byoe"},
     )
 
 
@@ -1007,8 +1061,27 @@ def main() -> int:
     args = parser.parse_args()
 
     # Phase 1: env-independent metadata (repos, issues, CI, PRs,
-    # override-file ids).  One pass.
+    # sidecar-recorded service ids).  One pass.
     metas = collect_repo_metadata()
+
+    # Canary.  Every count column on the dashboard is downstream of the
+    # per-repo service-id set, and an empty set renders as "—" rather
+    # than as an error — which is how a stale discovery rule survived
+    # months of green runs.  If *no* live repo yields a single id, the
+    # discovery rule is broken (not the data), so fail the run loudly
+    # instead of quietly publishing a table of dashes.
+    live = [m for m in metas if not m.is_archived]
+    discovery_broken = bool(live) and not any(m.service_ids for m in live)
+    if discovery_broken:
+        print(
+            f"\n  ✗ None of the {len(live)} live repos yielded a service id. "
+            "Service ids are read from the committed identity sidecars "
+            "(service.json / *.service.json); if the repos moved to a new "
+            "layout, _service_ids_from_sidecars needs updating.\n"
+        )
+    else:
+        total_ids = sum(len(m.service_ids) for m in live)
+        print(f"  ✓ Discovered {total_ids} service ids across {len(live)} live repos")
 
     # Phase 2: per-env breakdown rows.  One pass per environment;
     # missing API key for an env yields empty count dicts (no I/O).
@@ -1058,7 +1131,7 @@ def main() -> int:
             print(f"=== Comment on issue #{issue_number} ({repo_name}) ===")
             print(render_issue_comment_dual(entries, timestamp))
             print()
-        return 0
+        return 1 if discovery_broken else 0
 
     # README write
     readme = README_PATH.read_text()
@@ -1078,7 +1151,7 @@ def main() -> int:
     # is configured — the workflow exposes the PAT as GH_TOKEN).
     if args.skip_comments:
         print("Skipping sticky comments (--skip-comments)")
-        return 0
+        return 1 if discovery_broken else 0
 
     # Pivot env_rows (per-env lists) to per-repo (one entry per env).
     by_repo: dict[str, list[tuple[str, ProviderRow | None]]] = {}
@@ -1102,7 +1175,7 @@ def main() -> int:
         except RuntimeError as err:
             print(f"  ✗ {r.repo} → #{issue_number}: {err}")
 
-    return 0
+    return 1 if discovery_broken else 0
 
 
 if __name__ == "__main__":
