@@ -57,7 +57,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 2 active · 1 rejected | 3 published | 3 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
 | 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 17 active | 17 published | 17 byok | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | 🟡 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | llm | 17 active · 9 rejected | 26 published | 26 managed · 26 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-crofai/pulls) |
-| 🟡 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 2 active · 2 review revisions | 2 published | 2 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-deepseek/pulls) |
+| 🟡 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 2 active | 2 published | 2 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-deepseek/pulls) |
 | 🟡 | demo | [`unitysvc-services-demo`](https://github.com/unitysvc-labs/unitysvc-services-demo) | content, email, llm, notification, proxy | 20 active | — | 9 managed · 6 byok · 6 enrollable | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-demo/pulls) |
 | 🟡 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | embedding, llm | 15 active · 3 rejected | 18 published | 18 managed · 18 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-fireworks/pulls) |
 | 🟡 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 4 active · 3 rejected | 7 published | 7 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-groq/pulls) |
@@ -75,10 +75,10 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | content | 2 active | 2 published | 2 byok · 2 enrollable | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 4 active | 4 published | 4 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🟡 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | email, notification | 4 active · 1 rejected | 5 published | 5 byok · 3 enrollable | ✅ | — |
-| — | **Total** (24 repos) | — | — | 721 active · 50 review · 58 draft revisions · 102 rejected · 5 review revisions | 851 published · 2 unlisted | 136 managed · 622 byok · 423 enrollable | — | 14 |
+| — | **Total** (24 repos) | — | — | 721 active · 50 review · 58 draft revisions · 102 rejected · 3 review revisions | 851 published · 2 unlisted | 136 managed · 622 byok · 423 enrollable | — | 14 |
 <!-- providers-end -->
 
-_Last synced: 2026-08-22 18:10 UTC_
+_Last synced: 2026-08-23 00:28 UTC_
 
 ### Column legend
 
