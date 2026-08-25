@@ -78,7 +78,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (24 repos) | — | — | 784 active · 1 draft revision · 11 pending · 5 pending revisions · 78 rejected · 278 rejected revisions · 229 review revisions | 853 published | 136 managed · 622 byok · 422 enrollable | — | — |
 <!-- providers-end -->
 
-_Last synced: 2026-08-24 18:20 UTC_
+_Last synced: 2026-08-25 00:27 UTC_
 
 ### Column legend
 
