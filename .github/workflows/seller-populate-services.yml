@@ -48,12 +48,15 @@ jobs:
           ALL_SECRETS_JSON: ${{ toJSON(secrets) }}
           # Visibility each populated listing declares in
           # service_options.default_visibility. Resolves repo variable first,
-          # then org — so the org sets the fleet floor (unlisted) and a repo
-          # that has graduated to producing sound specs overrides it with
-          # `public`. The `||` fallback matters: an unset variable expands to
-          # the empty string, not to nothing, so a bare reference would hand
-          # the populator "" instead of letting its own default apply.
-          DEFAULT_VISIBILITY: ${{ vars.DEFAULT_VISIBILITY || 'unlisted' }}
+          # then org. Deliberately has NO fallback: unset must mean "declare
+          # nothing", because ingest treats an absent value as leave-it-alone
+          # (`default_visibility or existing_service.visibility`), while any
+          # literal here is re-applied on every upload. The old `|| 'unlisted'`
+          # meant each populate+upload cycle silently unlisted services a human
+          # had already made public — a default nobody set overriding a choice
+          # someone did. A repo ready to publish by default sets the variable
+          # to `public`; the populator omits the field when it is empty.
+          DEFAULT_VISIBILITY: ${{ vars.DEFAULT_VISIBILITY }}
         run: |
           set -euo pipefail
           # Export every inherited repo secret as an env var so provider
