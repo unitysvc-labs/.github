@@ -40,8 +40,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          # >=0.2.25: `specs run-tests --category` + upstream_test_status recording
-          pip install "unitysvc-sellers>=0.2.25"
+          # >=0.3.1: requires service_name from every iterator, deprecates
+          # models the upstream no longer serves, and never lets a null
+          # overwrite a known value.
+          pip install "unitysvc-sellers>=0.3.1"
 
       - name: Execute populate services command
         env:
@@ -69,26 +71,6 @@ jobs:
           done < <(jq -r 'keys[]' <<<"$ALL_SECRETS_JSON")
           echo "Running populate services command..."
           usvc_seller specs populate
-
-      - name: Record upstream connectivity status
-        env:
-          ALL_SECRETS_JSON: ${{ toJSON(secrets) }}
-        run: |
-          set -euo pipefail
-          # Same secret export as the populate step: the probe authenticates
-          # against the provider's upstream, so it needs that provider's key.
-          while IFS= read -r k; do
-            v="$(jq -r --arg k "$k" '.[$k]' <<<"$ALL_SECRETS_JSON")"
-            echo "::add-mask::$v"
-            export "$k=$v"
-          done < <(jq -r 'keys[]' <<<"$ALL_SECRETS_JSON")
-          echo "Recording upstream connectivity status..."
-          # Connectivity probes are curl/bash — no SDK installs — and are the
-          # only category that gates `specs upload`. `|| true` is deliberate:
-          # the job's purpose is to RECORD the outcome into each service.json so
-          # a later upload can skip an upstream that cannot serve the model. A
-          # failing probe must not abort the run or block the populate PR.
-          usvc_seller specs run-tests --category connectivity --force || true
 
       - name: Check for changes in specs/ directory
         id: check_changes
@@ -124,24 +106,14 @@ jobs:
 
             - Executed services population commands from provider configurations
             - Updated data files in the `specs/` directory
-            - Recorded each service's upstream connectivity result as
-              `upstream_test_status` in its `service.json` / `*.service.json`
-
-            ## About `upstream_test_status`
-
-            A service recorded `fail` could not be reached by the connectivity
-            probe, so `usvc_seller specs upload` will skip it (override with
-            `--ignore-test-status`). This does **not** unpublish an already-live
-            service: the probe uses this repository's credential, while a BYOK
-            customer calls the upstream with their own key and entitlements.
-            A probe can also fail transiently, so check before acting on one.
+            - Marked as `deprecated` any service the upstream no longer serves
 
             ## Review Checklist
 
             - [ ] Verify all generated data is accurate and properly formatted
             - [ ] Check that no sensitive information was accidentally included
             - [ ] Ensure all new files follow the repository's data structure conventions
-            - [ ] Review any `upstream_test_status: fail` — is the upstream really down?
+            - [ ] Review each `status: deprecated` — has the upstream really retired it?
 
             ---
 
