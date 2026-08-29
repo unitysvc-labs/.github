@@ -9,15 +9,23 @@ name: Upload Data to Staging (reusable)
 #       uses: unitysvc-labs/.github/.github/workflows/seller-upload-staging.yml@main
 #       secrets: inherit
 #
-# Runs on PR-merge in the caller. Besides uploading, it writes service_id
-# override files back to main (hence contents: write must be granted by the
-# caller job).
+# Runs on PR-MERGE in the caller (enforced by the job-level `if` below — a PR
+# closed without merging must not upload). Besides uploading, it writes
+# service_id override files back to main (hence contents: write must be
+# granted by the caller job).
 
 on:
   workflow_call:
 
 jobs:
   upload:
+    # `pull_request: types: [closed]` fires whether the PR was MERGED or just
+    # abandoned, so without this guard closing a PR without merging uploads and
+    # re-submits the whole catalog — observed on
+    # unitysvc-services-huggingface#104, closed unmerged on 2026-08-29, which
+    # kicked off a full staging upload 3s later. Only gate pull_request; leave
+    # workflow_dispatch (where github.event.pull_request is null) able to run.
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     defaults:
       run:
