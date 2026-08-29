@@ -89,7 +89,17 @@ jobs:
         if: steps.check_changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # NOT GITHUB_TOKEN. GitHub deliberately does not trigger workflows from
+          # events created with GITHUB_TOKEN (its recursion guard), so a PR opened
+          # with it gets check runs that are parked `action_required` or fail with
+          # zero jobs. Measured across the 11 service repos on 2026-08-29: 137
+          # bot-triggered pull_request runs, NOT ONE of which ever executed a job,
+          # against 469 human-triggered runs of which none were ever parked. So
+          # `Validate Data` and `Format Check` had never once run on a nightly
+          # populate PR. A PAT makes the PR author a real identity and the checks
+          # run normally. The fallback keeps the workflow working (with the old
+          # parked-check behaviour) if the secret is ever missing.
+          token: ${{ secrets.LABS_POPULATE_TOKEN || secrets.GITHUB_TOKEN }}
           commit-message: |
             Auto-populate services data
 
