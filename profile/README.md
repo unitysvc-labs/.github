@@ -80,7 +80,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (25 repos) | — | — | 6 review · 4 rejected | 10 unlisted | 6 byok · 7 enrollable | — | 4 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-03 10:10 UTC_
+_Last synced: 2026-09-03 15:17 UTC_
 
 ### Column legend
 
