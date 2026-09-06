@@ -80,7 +80,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (25 repos) | — | — | 909 active · 26 rejected · 8 rejected revisions | 837 published | 189 managed · 640 byok · 422 enrollable | — | 8 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-06 09:44 UTC_
+_Last synced: 2026-09-06 14:28 UTC_
 
 ### Column legend
 
