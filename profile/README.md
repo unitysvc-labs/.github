@@ -37,7 +37,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | mcp | [`unitysvc-services-mcp`](https://github.com/unitysvc-labs/unitysvc-services-mcp) | proxy | 16 active | 16 published | 5 managed · 11 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active | 30 published | 30 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 19 active · 1 rejected revision | 19 published | 19 byok | ✅ | — |
-| 🟡 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active · 1 rejected revision | 150 published | 23 managed · 174 byok · 174 enrollable | ✅ | — |
+| 🟡 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active · 1 rejected revision | 150 published | 23 managed · 174 byok · 174 enrollable | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-notify/pulls) |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 enrollable | ✅ | — |
 | 🟢 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | embedding, llm | 235 active | 235 published | 7 byok · 235 enrollable | ✅ | — |
 | 🟢 | openai | [`unitysvc-services-openai`](https://github.com/unitysvc-labs/unitysvc-services-openai) | llm | 26 active | 26 published | 26 byok | ✅ | — |
@@ -46,7 +46,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | proxy | 2 active | 2 published | 2 byok · 2 enrollable | ✅ | — |
 | 🟢 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 6 active | 6 published | 6 byok | ✅ | — |
 | 🟢 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | notification, proxy | 6 active | 5 published | 2 managed · 4 byok · 3 enrollable | ✅ | — |
-| — | **Total** (25 repos) | — | — | 915 active · 27 rejected · 10 rejected revisions | 842 published | 211 managed · 631 byok · 422 enrollable | — | 2 |
+| — | **Total** (25 repos) | — | — | 915 active · 27 rejected · 10 rejected revisions | 842 published | 211 managed · 631 byok · 422 enrollable | — | 4 |
 
 ### Staging
 
@@ -68,7 +68,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | mcp | [`unitysvc-services-mcp`](https://github.com/unitysvc-labs/unitysvc-services-mcp) | proxy | 16 active | 16 published | 5 managed · 11 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active | 30 published | 30 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
 | 🟢 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 19 active | 19 published | 19 byok | ✅ | — |
-| 🟡 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active · 1 rejected revision | 150 published | 23 managed · 174 byok · 174 enrollable | ✅ | — |
+| 🟡 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active · 1 pending revision · 32 rejected revisions | 150 published | 23 managed · 174 byok · 174 enrollable | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-notify/pulls) |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 enrollable | ✅ | — |
 | 🟢 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | embedding, llm | 235 active | 235 published | 7 byok · 235 enrollable | ✅ | — |
 | 🟢 | openai | [`unitysvc-services-openai`](https://github.com/unitysvc-labs/unitysvc-services-openai) | llm | 27 active | 27 published | 27 byok | ✅ | — |
@@ -77,10 +77,10 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | proxy | 2 active | 2 published | 2 byok · 2 enrollable | ✅ | — |
 | 🟢 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 6 active | 6 published | 6 byok | ✅ | — |
 | 🟢 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | notification, proxy | 6 active | 5 published | 2 managed · 4 byok · 3 enrollable | ✅ | — |
-| — | **Total** (25 repos) | — | — | 920 active · 26 rejected · 9 rejected revisions | 846 published | 211 managed · 635 byok · 422 enrollable | — | 2 |
+| — | **Total** (25 repos) | — | — | 920 active · 1 pending revision · 26 rejected · 40 rejected revisions | 846 published | 211 managed · 635 byok · 422 enrollable | — | 4 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-08 20:23 UTC_
+_Last synced: 2026-09-09 01:41 UTC_
 
 ### Column legend
 
