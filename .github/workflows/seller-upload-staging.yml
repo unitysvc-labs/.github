@@ -27,9 +27,6 @@ jobs:
     # workflow_dispatch (where github.event.pull_request is null) able to run.
     if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: services
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -65,11 +62,11 @@ jobs:
           # manifest's defaults resolve to real values, then upload it in one call
           # — values AND the comment-block descriptions surfaced to customers
           # (unitysvc#1618). GitHub auto-masks secret values in the log.
-          if [ -f seller.secrets.txt ]; then
+          if [ -f services/seller.secrets.txt ]; then
             echo "Seeding from seller.secrets.txt (values from GitHub secrets/vars; descriptions from the file)."
             eval "$(printf '%s' "$ALL_VARS_JSON"    | jq -r 'to_entries[] | select(.key|test("^[A-Z_][A-Z0-9_]*$")) | "export \(.key)=\(.value|@sh)"')"
             eval "$(printf '%s' "$ALL_SECRETS_JSON" | jq -r 'to_entries[] | select(.key|test("^[A-Z_][A-Z0-9_]*$")) | "export \(.key)=\(.value|@sh)"')"
-            usvc_seller secrets upload seller.secrets.txt
+            usvc_seller secrets upload services/seller.secrets.txt
             exit 0
           fi
           # Fallback for repos with no manifest: auto-derive the referenced names
@@ -78,11 +75,11 @@ jobs:
           # tripping grep's exit-1 under set -o pipefail.
           names="$( { grep -rEhno \
             '\$\{\s*(customer_secrets|secrets)\.[A-Za-z_][A-Za-z0-9_]*' \
-            specs/ templates/ data/ 2>/dev/null || true; } \
+            services/specs/ services/templates/ services/data/ 2>/dev/null || true; } \
             | sed -E 's/.*(customer_secrets|secrets)\.([A-Za-z_][A-Za-z0-9_]*).*/\2/' \
             | sort -u)"
           if [ -z "$names" ]; then
-            echo "No seller.secrets.txt and no secret references under specs/ templates/ data/."
+            echo "No services/seller.secrets.txt and no secret references under services/specs/, services/templates/, or services/data/."
             exit 0
           fi
           echo "Found secret references:"
@@ -115,6 +112,9 @@ jobs:
           echo "Uploading + submitting services to staging..."
           # --submit folds the submit-for-review (validate -> pending -> run
           # tests) into the ingest task, so no separate submit step is needed.
+          # Upload from the repository root so discovery includes both
+          # services/specs/ and the sibling platform_services/ member-param
+          # tree.
           usvc_seller specs upload --submit
 
       - name: Commit back service_id sidecars
@@ -122,8 +122,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # Folder specs write `<service>/service.json`; param-file specs write
-          # `<name>.service.json` beside the param file. Stage both.
-          find specs -type f \( -name 'service.json' -o -name '*.service.json' \) -exec git add {} +
+          # `<name>.service.json` beside the param file. Platform members use
+          # the same sidecar convention under the repo-root platform_services/
+          # tree, so stage both inventories when present.
+          for inventory in services/specs platform_services; do
+            [ -d "$inventory" ] || continue
+            find "$inventory" -type f \( -name 'service.json' -o -name '*.service.json' \) -exec git add {} +
+          done
           if ! git diff --cached --quiet; then
             git commit -m "ci: write back service_id sidecars [skip ci]"
             # A protected default branch rejects the bot's push (GH006). The
@@ -131,7 +136,7 @@ jobs:
             # failing the job — the sidecars can be committed by hand, or the
             # repo can grant the Actions app a pull-request bypass.
             if ! git push; then
-              echo "::warning::Could not push the service_id sidecars — the branch is protected against the Actions bot. The upload succeeded; commit specs/**/service.json by hand, or allow github-actions to bypass the pull-request rule."
+              echo "::warning::Could not push the service_id sidecars — the branch is protected against the Actions bot. The upload succeeded; commit services/specs/**/service.json or platform_services/**/service.json by hand, or allow github-actions to bypass the pull-request rule."
             fi
           else
             echo "No service_id sidecars changed"
@@ -143,7 +148,7 @@ jobs:
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_STAGING_API_URL }}
         run: |
           echo "Publishing services to make them visible in the catalog..."
-          usvc_seller services set-visibility public --local-ids --data-dir specs --yes
+          usvc_seller services set-visibility public --local-ids --data-dir services/specs --yes
 
       - name: Upload summary
         if: always()

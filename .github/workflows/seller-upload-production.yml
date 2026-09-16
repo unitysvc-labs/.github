@@ -20,9 +20,6 @@ on:
 jobs:
   upload:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: services
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -53,11 +50,11 @@ jobs:
           # manifest's defaults resolve to real values, then upload it in one call
           # — values AND the comment-block descriptions surfaced to customers
           # (unitysvc#1618). GitHub auto-masks secret values in the log.
-          if [ -f seller.secrets.txt ]; then
+          if [ -f services/seller.secrets.txt ]; then
             echo "Seeding from seller.secrets.txt (values from GitHub secrets/vars; descriptions from the file)."
             eval "$(printf '%s' "$ALL_VARS_JSON"    | jq -r 'to_entries[] | select(.key|test("^[A-Z_][A-Z0-9_]*$")) | "export \(.key)=\(.value|@sh)"')"
             eval "$(printf '%s' "$ALL_SECRETS_JSON" | jq -r 'to_entries[] | select(.key|test("^[A-Z_][A-Z0-9_]*$")) | "export \(.key)=\(.value|@sh)"')"
-            usvc_seller secrets upload seller.secrets.txt
+            usvc_seller secrets upload services/seller.secrets.txt
             exit 0
           fi
           # Fallback for repos with no manifest: auto-derive the referenced names
@@ -70,11 +67,11 @@ jobs:
           # `|| true` keeps a repo with no references from tripping grep's exit-1.
           names="$( { grep -rEhno \
             '\$\{\s*(customer_secrets|secrets)\.[A-Za-z_][A-Za-z0-9_]*' \
-            specs/ templates/ data/ 2>/dev/null || true; } \
+            services/specs/ services/templates/ services/data/ 2>/dev/null || true; } \
             | sed -E 's/.*(customer_secrets|secrets)\.([A-Za-z_][A-Za-z0-9_]*).*/\2/' \
             | sort -u)"
           if [ -z "$names" ]; then
-            echo "No seller.secrets.txt and no secret references under specs/ templates/ data/."
+            echo "No services/seller.secrets.txt and no secret references under services/specs/, services/templates/, or services/data/."
             exit 0
           fi
           echo "Found secret references:"
@@ -107,6 +104,9 @@ jobs:
           echo "Uploading + submitting services to production..."
           # --submit folds the submit-for-review (validate -> pending -> run
           # tests) into the ingest task, so no separate submit step is needed.
+          # Upload from the repository root so discovery includes both
+          # services/specs/ and the sibling platform_services/ member-param
+          # tree.
           usvc_seller specs upload --submit
 
       - name: Publish services
@@ -115,7 +115,7 @@ jobs:
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_URL }}
         run: |
           echo "Publishing services to make them visible in the catalog..."
-          usvc_seller services set-visibility public --local-ids --data-dir specs --yes
+          usvc_seller services set-visibility public --local-ids --data-dir services/specs --yes
 
       - name: Upload summary
         if: always()
