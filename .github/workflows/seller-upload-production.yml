@@ -11,8 +11,8 @@ name: Upload Data to Production (reusable)
 # (UNITYSVC_SELLER_PRODUCTION_API_*) and the dynamic provider secrets picked up
 # via toJSON(secrets) below are all available without re-declaring them here.
 #
-# Production uploads are manual (workflow_dispatch in the caller) and assume the
-# service IDs already exist in production (created by an earlier staging run).
+# Production uploads run either manually or after a seller-repository PR merge.
+# Service IDs must already exist in production from initial provisioning.
 
 on:
   workflow_call:
@@ -23,6 +23,10 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # On a merged pull request, deploy the updated base branch. Manual
+          # runs continue to use the branch selected in workflow_dispatch.
+          ref: ${{ github.event.pull_request.base.ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -124,4 +128,5 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Uploaded to Backend" >> $GITHUB_STEP_SUMMARY
           echo "- Backend URL: \`${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_URL }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Triggered manually by: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Triggered by: @${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Pull request: #${{ github.event.pull_request.number }}" >> $GITHUB_STEP_SUMMARY
