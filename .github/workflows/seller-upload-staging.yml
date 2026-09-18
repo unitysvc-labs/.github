@@ -9,23 +9,18 @@ name: Upload Data to Staging (reusable)
 #       uses: unitysvc-labs/.github/.github/workflows/seller-upload-staging.yml@main
 #       secrets: inherit
 #
-# Runs on PR-MERGE in the caller (enforced by the job-level `if` below — a PR
-# closed without merging must not upload). Besides uploading, it writes
-# service_id override files back to main (hence contents: write must be
-# granted by the caller job).
+# Seller repositories use this as their merge entrypoint. A merged PR is routed
+# to the production workflow; staging remains available only through the
+# caller's workflow_dispatch action. A PR closed without merging runs neither.
 
 on:
   workflow_call:
 
 jobs:
   upload:
-    # `pull_request: types: [closed]` fires whether the PR was MERGED or just
-    # abandoned, so without this guard closing a PR without merging uploads and
-    # re-submits the whole catalog — observed on
-    # unitysvc-services-huggingface#104, closed unmerged on 2026-08-29, which
-    # kicked off a full staging upload 3s later. Only gate pull_request; leave
-    # workflow_dispatch (where github.event.pull_request is null) able to run.
-    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+    # PR merges deploy to production below. Keep this job for explicitly
+    # requested staging uploads only.
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -158,3 +153,8 @@ jobs:
           echo "### Uploaded to Backend" >> $GITHUB_STEP_SUMMARY
           echo "- Backend URL: \`${{ secrets.UNITYSVC_SELLER_STAGING_API_URL }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Triggered by PR: #${{ github.event.pull_request.number }}" >> $GITHUB_STEP_SUMMARY
+
+  upload-production:
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
+    uses: unitysvc-labs/.github/.github/workflows/seller-upload-production.yml@main
+    secrets: inherit
