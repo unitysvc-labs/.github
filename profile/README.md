@@ -36,7 +36,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 1 active | 1 published | 1 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 12 rejected revisions | 30 published | 30 byok | ✅ | — |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 16 active | 16 published | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
-| ⚪ | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active | 150 published | 23 managed · 166 byok · 125 enrollable | ⚪ | — |
+| 🟢 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active | 150 published | 23 managed · 166 byok · 125 enrollable | ✅ | — |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 enrollable | ✅ | — |
 | 🟡 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | embedding, llm | 242 active | 242 published | 6 byok · 242 enrollable | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🟢 | openai | [`unitysvc-services-openai`](https://github.com/unitysvc-labs/unitysvc-services-openai) | llm | 26 active | 26 published | 26 byok | ✅ | — |
@@ -67,7 +67,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 1 active | 1 published | 1 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 12 rejected revisions | 30 published | 30 byok | ✅ | — |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 16 active | 16 published | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
-| ⚪ | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active | 150 published | 23 managed · 166 byok · 125 enrollable | ⚪ | — |
+| 🟢 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active | 150 published | 23 managed · 166 byok · 125 enrollable | ✅ | — |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 enrollable | ✅ | — |
 | 🟡 | [Ollama](https://github.com/unitysvc-labs/unitysvc-labs/issues/33) | [`unitysvc-services-ollama`](https://github.com/unitysvc-labs/unitysvc-services-ollama) | embedding, llm | 239 active · 3 rejected · 2 rejected revisions | 235 published · 7 unlisted | 9 byok · 242 enrollable | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-ollama/pulls) |
 | 🟢 | openai | [`unitysvc-services-openai`](https://github.com/unitysvc-labs/unitysvc-services-openai) | llm | 26 active | 26 published | 26 byok | ✅ | — |
@@ -80,7 +80,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (25 repos) | — | — | 936 active · 1 draft · 1 draft revision · 16 rejected · 42 rejected revisions | 822 published · 7 unlisted | 217 managed · 605 byok · 380 enrollable | — | 9 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-21 17:15 UTC_
+_Last synced: 2026-09-21 21:17 UTC_
 
 ### Column legend
 
