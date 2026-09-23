@@ -34,7 +34,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 4 active | 3 published | 1 managed · 3 byok · 3 enrollable | ✅ | — |
 | 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 134 active | 134 published | 134 byok | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 1 active | 1 published | 1 byok | ✅ | — |
-| 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 1 pending revision · 11 rejected revisions | 30 published | 30 byok | ✅ | — |
+| 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 12 rejected revisions | 30 published | 30 byok | ✅ | — |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 16 active | 16 published | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
 | 🟢 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 189 active | 150 published | 23 managed · 166 byok · 125 enrollable | ✅ | — |
 | 🟢 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 enrollable | ✅ | — |
@@ -46,7 +46,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟢 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | proxy | 2 active | 2 published | 2 byok · 2 enrollable | ✅ | — |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 6 active · 1 rejected | 7 published | 7 byok | ✅ | — |
 | 🟡 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | notification, proxy | 6 active | 5 published | 2 managed · 4 byok · 4 enrollable | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-smtp/pulls) |
-| — | **Total** (25 repos) | — | — | 890 active · 1 pending revision · 1 rejected · 12 rejected revisions | 818 published | 162 managed · 591 byok · 383 enrollable | — | 11 |
+| — | **Total** (25 repos) | — | — | 890 active · 1 rejected · 13 rejected revisions | 818 published | 162 managed · 591 byok · 383 enrollable | — | 11 |
 
 ### Staging
 
@@ -80,7 +80,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (25 repos) | — | — | 936 active · 1 draft · 1 draft revision · 16 rejected · 42 rejected revisions | 822 published · 7 unlisted | 217 managed · 605 byok · 380 enrollable | — | 11 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-23 10:20 UTC_
+_Last synced: 2026-09-23 15:38 UTC_
 
 ### Column legend
 
