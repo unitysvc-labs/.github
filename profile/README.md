@@ -32,7 +32,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | embedding, llm | 27 active | 15 published | 27 managed · 15 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-fireworks/pulls) |
 | 🟡 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 7 active | 7 published | 7 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-groq/pulls) |
 | 🟢 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 4 active | 3 published | 1 managed · 3 byok · 3 enrollable | ✅ | — |
-| 🟡 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 134 active | 134 published | 134 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
+| 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 134 active | 134 published | 134 byok | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 1 active | 1 published | 1 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 12 rejected revisions | 30 published | 30 byok | ✅ | — |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 16 active | 16 published | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
@@ -63,7 +63,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [Fireworks](https://github.com/unitysvc-labs/unitysvc-labs/issues/10) | [`unitysvc-services-fireworks`](https://github.com/unitysvc-labs/unitysvc-services-fireworks) | embedding, llm | 28 active · 6 rejected · 1 rejected revision | 16 published | 34 managed · 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-fireworks/pulls) |
 | 🟡 | [Groq](https://github.com/unitysvc-labs/unitysvc-labs/issues/7) | [`unitysvc-services-groq`](https://github.com/unitysvc-labs/unitysvc-services-groq) | llm | 7 active · 4 rejected | 11 published | 11 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-groq/pulls) |
 | 🟢 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 2 active | 1 published | 1 managed · 1 byok · 1 enrollable | ✅ | — |
-| 🟡 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 137 active · 1 draft · 1 rejected · 4 rejected revisions | 139 published | 139 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
+| 🔴 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 137 active · 1 draft · 1 rejected · 4 rejected revisions | 139 published | 139 byok | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
 | 🟢 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 1 active | 1 published | 1 byok | ✅ | — |
 | 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 12 rejected revisions | 30 published | 30 byok | ✅ | — |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 16 active | 16 published | 16 byok | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
@@ -80,7 +80,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (25 repos) | — | — | 936 active · 1 draft · 1 draft revision · 16 rejected · 42 rejected revisions | 822 published · 7 unlisted | 217 managed · 605 byok · 380 enrollable | — | 12 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-24 10:34 UTC_
+_Last synced: 2026-09-24 15:58 UTC_
 
 ### Column legend
 
