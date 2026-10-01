@@ -25,7 +25,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 11 active | 11 published | 11 secret_bound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
 | 🟢 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | llm | 37 active | 37 published | 37 secret_bound | ✅ | — |
 | 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 2 active | 2 published | 2 secret_bound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
-| 🔴 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 16 active · 1 rejected revision | 16 published | 16 secret_bound | ❌ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
+| 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 16 active · 1 rejected revision | 16 published | 16 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | 🔴 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | — | — | — | — | ❌ | — |
 | 🟢 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 1 active | 1 published | 1 secret_bound | ✅ | — |
 | 🟢 | demo | [`unitysvc-services-demo`](https://github.com/unitysvc-labs/unitysvc-services-demo) | content, email, llm, notification, proxy | 20 active | — | 6 enrollable · 6 secret_bound · 9 unbound | ✅ | — |
@@ -56,7 +56,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 11 active | 11 published | 11 secret_bound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-anthropic/pulls) |
 | 🟢 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | llm | 37 active | 37 published | 37 secret_bound | ✅ | — |
 | 🟡 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 2 active | 2 published | 2 secret_bound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-cerebras/pulls) |
-| 🔴 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 17 active · 1 draft revision | 17 published | 17 secret_bound | ❌ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
+| 🟡 | [Cohere](https://github.com/unitysvc-labs/unitysvc-labs/issues/24) | [`unitysvc-services-cohere`](https://github.com/unitysvc-labs/unitysvc-services-cohere) | embedding, llm | 17 active · 1 draft revision | 17 published | 17 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-cohere/pulls) |
 | 🔴 | [Crof AI](https://github.com/unitysvc-labs/unitysvc-labs/issues/11) | [`unitysvc-services-crofai`](https://github.com/unitysvc-labs/unitysvc-services-crofai) | llm | 21 active · 21 rejected revisions | — | 21 unbound | ❌ | — |
 | 🟢 | [DeepSeek](https://github.com/unitysvc-labs/unitysvc-labs/issues/25) | [`unitysvc-services-deepseek`](https://github.com/unitysvc-labs/unitysvc-services-deepseek) | llm | 1 active | 1 published | 1 secret_bound | ✅ | — |
 | 🟢 | demo | [`unitysvc-services-demo`](https://github.com/unitysvc-labs/unitysvc-services-demo) | content, email, llm, notification, proxy | 20 active | — | 6 enrollable · 6 secret_bound · 9 unbound | ✅ | — |
@@ -80,7 +80,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (25 repos) | — | — | 936 active · 1 draft · 1 draft revision · 16 rejected · 42 rejected revisions | 822 published · 7 unlisted | 380 enrollable · 605 secret_bound · 217 unbound | — | 11 |
 <!-- providers-end -->
 
-_Last synced: 2026-09-30 21:34 UTC_
+_Last synced: 2026-10-01 02:33 UTC_
 
 ### Column legend
 
