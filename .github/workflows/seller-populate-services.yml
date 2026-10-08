@@ -42,8 +42,8 @@ jobs:
           python -m pip install --upgrade pip
           # >=0.3.1: requires service_name from every iterator, deprecates
           # models the upstream no longer serves, and never lets a null
-          # overwrite a known value.
-          pip install "unitysvc-sellers>=0.3.1"
+          # overwrite a known value. >=0.3.12: member-services/ (unitysvc#2569).
+          pip install "unitysvc-sellers>=0.3.12"
 
       - name: Execute populate services command
         env:
