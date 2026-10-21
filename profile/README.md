@@ -76,7 +76,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (23 repos) | — | — | 858 active · 1 rejected · 154 rejected revisions | 793 published | 383 enrollable · 585 secret_bound · 132 unbound | — | 8 |
 <!-- providers-end -->
 
-_Last synced: 2026-10-21 16:11 UTC_
+_Last synced: 2026-10-21 20:57 UTC_
 
 ### Column legend
 
