@@ -62,7 +62,7 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [HTTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/27) | [`unitysvc-services-http`](https://github.com/unitysvc-labs/unitysvc-services-http) | proxy | 4 active | 3 published | 3 enrollable · 3 secret_bound · 1 unbound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-http/pulls) |
 | 🟡 | [Hugging Face](https://github.com/unitysvc-labs/unitysvc-labs/issues/28) | [`unitysvc-services-huggingface`](https://github.com/unitysvc-labs/unitysvc-services-huggingface) | llm | 117 active · 3 rejected revisions | 117 published | 117 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-huggingface/pulls) |
 | 🟡 | [Inception](https://github.com/unitysvc-labs/unitysvc-labs/issues/29) | [`unitysvc-services-inception`](https://github.com/unitysvc-labs/unitysvc-services-inception) | llm | 1 active | 1 published | 1 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-inception/pulls) |
-| 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 12 pending revisions · 2 rejected revisions | 30 published | 30 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
+| 🟡 | [Mistral](https://github.com/unitysvc-labs/unitysvc-labs/issues/30) | [`unitysvc-services-mistral`](https://github.com/unitysvc-labs/unitysvc-services-mistral) | embedding, llm | 30 active · 14 rejected revisions | 30 published | 30 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-mistral/pulls) |
 | 🟡 | [Nebius Cloud](https://github.com/unitysvc-labs/unitysvc-labs/issues/20) | [`unitysvc-services-nebius`](https://github.com/unitysvc-labs/unitysvc-services-nebius) | embedding, llm | 17 active · 1 rejected revision | 17 published | 17 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-nebius/pulls) |
 | 🟡 | [Notify](https://github.com/unitysvc-labs/unitysvc-labs/issues/31) | [`unitysvc-services-notify`](https://github.com/unitysvc-labs/unitysvc-services-notify) | notification | 180 active · 114 rejected revisions | 141 published | 125 enrollable · 166 secret_bound · 14 unbound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-notify/pulls) |
 | 🔴 | [ntfy](https://github.com/unitysvc-labs/unitysvc-labs/issues/32) | [`unitysvc-services-ntfy`](https://github.com/unitysvc-labs/unitysvc-services-ntfy) | notification | 1 active | 1 published | 1 enrollable | ❌ | [1](https://github.com/unitysvc-labs/unitysvc-services-ntfy/pulls) |
@@ -73,10 +73,10 @@ users see); **Staging** previews changes before they ship.  Private
 | 🟡 | [S3](https://github.com/unitysvc-labs/unitysvc-labs/issues/36) | [`unitysvc-services-s3`](https://github.com/unitysvc-labs/unitysvc-services-s3) | proxy | 2 active | 2 published | 2 enrollable · 2 secret_bound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-s3/pulls) |
 | 🟡 | [SambaNova](https://github.com/unitysvc-labs/unitysvc-labs/issues/37) | [`unitysvc-services-sambanova`](https://github.com/unitysvc-labs/unitysvc-services-sambanova) | llm | 5 active · 5 rejected revisions | 5 published | 5 secret_bound | ✅ | [2](https://github.com/unitysvc-labs/unitysvc-services-sambanova/pulls) |
 | 🟡 | [SMTP](https://github.com/unitysvc-labs/unitysvc-labs/issues/38) | [`unitysvc-services-smtp`](https://github.com/unitysvc-labs/unitysvc-services-smtp) | notification, proxy | 6 active · 5 rejected revisions | 5 published | 4 enrollable · 4 secret_bound · 2 unbound | ✅ | [1](https://github.com/unitysvc-labs/unitysvc-services-smtp/pulls) |
-| — | **Total** (23 repos) | — | — | 843 active · 12 pending revisions · 382 rejected revisions | 777 published | 383 enrollable · 565 secret_bound · 134 unbound | — | 37 |
+| — | **Total** (23 repos) | — | — | 843 active · 394 rejected revisions | 777 published | 383 enrollable · 565 secret_bound · 134 unbound | — | 37 |
 <!-- providers-end -->
 
-_Last synced: 2026-10-28 17:28 UTC_
+_Last synced: 2026-10-28 21:56 UTC_
 
 ### Column legend
 
