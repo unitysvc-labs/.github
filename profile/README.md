@@ -21,7 +21,7 @@ users see); **Staging** previews changes before they ship.  Private
 
 | Status | Provider | Repo | Type | Lifecycle | Visibility | Listing type | CI | Open PRs |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 4 active | 4 published | 4 secret_bound · 4 unbound | — | — |
+| 🟢 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 4 active | 4 published | 4 secret_bound · 4 unbound | ✅ | — |
 | 🟢 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 11 active | 11 published | 11 secret_bound | ✅ | — |
 | 🔴 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | llm | 37 active | 37 published | 37 secret_bound | ❌ | — |
 | 🟢 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 2 active | 2 published | 2 secret_bound | ✅ | — |
@@ -50,7 +50,7 @@ users see); **Staging** previews changes before they ship.  Private
 
 | Status | Provider | Repo | Type | Lifecycle | Visibility | Listing type | CI | Open PRs |
 |---|---|---|---|---|---|---|---|---|
-| 🟢 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 4 active | 4 published | 4 secret_bound · 4 unbound | — | — |
+| 🟢 | [Aion Labs](https://github.com/unitysvc-labs/unitysvc-labs/issues/9) | [`unitysvc-services-aionlabs`](https://github.com/unitysvc-labs/unitysvc-services-aionlabs) | llm | 4 active | 4 published | 4 secret_bound · 4 unbound | ✅ | — |
 | 🟢 | [Anthropic](https://github.com/unitysvc-labs/unitysvc-labs/issues/21) | [`unitysvc-services-anthropic`](https://github.com/unitysvc-labs/unitysvc-services-anthropic) | llm | 11 active | 11 published | 11 secret_bound | ✅ | — |
 | 🔴 | bedrock | [`unitysvc-services-bedrock`](https://github.com/unitysvc-labs/unitysvc-services-bedrock) | llm | 37 active | 37 published | 37 secret_bound | ❌ | — |
 | 🟢 | [Cerebras](https://github.com/unitysvc-labs/unitysvc-labs/issues/22) | [`unitysvc-services-cerebras`](https://github.com/unitysvc-labs/unitysvc-services-cerebras) | llm | 2 active | 2 published | 2 secret_bound | ✅ | — |
@@ -76,7 +76,7 @@ users see); **Staging** previews changes before they ship.  Private
 | — | **Total** (23 repos) | — | — | 826 active · 263 rejected revisions | 704 published · 1 unlisted | 428 enrollable · 549 secret_bound · 133 unbound | — | 10 |
 <!-- providers-end -->
 
-_Last synced: 2026-11-18 23:39 UTC_
+_Last synced: 2026-11-19 04:38 UTC_
 
 ### Column legend
 
