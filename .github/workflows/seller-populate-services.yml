@@ -9,6 +9,8 @@ name: Populate Services (reusable)
 #         pull-requests: write
 #       uses: unitysvc-labs/.github/.github/workflows/seller-populate-services.yml@main
 #       secrets: inherit
+#       with:
+#         auto_merge: true   # optional — see the input below
 #
 # Provider API keys are repo secrets. `secrets: inherit` makes them available
 # in the `secrets` context; the populate step then exports every inherited
@@ -18,6 +20,20 @@ name: Populate Services (reusable)
 
 on:
   workflow_call:
+    inputs:
+      auto_merge:
+        description: >-
+          Merge the generated PR without human review once its checks
+          (Validate Data, Format Check) pass. Only for repos whose every
+          service is a BYOK LLM service — there the populate run can change
+          nothing the platform bills for. Repos with managed (seller-key)
+          channels, BYOE channels, or platform services must leave this off
+          so a human reviews prices and deprecations. NOTE: merging the PR
+          fires the caller's "Upload Data to Production" workflow, so with
+          this on, a populate run publishes to production unattended.
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   populate-services:
@@ -86,6 +102,7 @@ jobs:
           fi
 
       - name: Create Pull Request
+        id: create_pr
         if: steps.check_changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v5
         with:
@@ -136,6 +153,56 @@ jobs:
             automated
             data-update
 
+      # Opt-in (inputs.auto_merge). Waits for the PR's own checks and merges
+      # only if every one of them passed — done here rather than with GitHub's
+      # native auto-merge because that needs "Allow auto-merge" plus a branch
+      # protection rule with required checks on every repo, and without the
+      # rule `gh pr merge --auto` merges immediately, checks or not.
+      #
+      # Needs LABS_POPULATE_TOKEN, for the same recursion-guard reason as the
+      # step above, twice over: a PR opened with GITHUB_TOKEN never gets its
+      # checks run (nothing to gate on), and a merge made with GITHUB_TOKEN
+      # would not fire the caller's production-upload workflow. Without the
+      # secret the PR is simply left for a human.
+      - name: Auto-merge Pull Request
+        id: auto_merge
+        if: >-
+          inputs.auto_merge
+          && steps.create_pr.outputs.pull-request-number
+          && steps.create_pr.outputs.pull-request-operation != 'closed'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ secrets.LABS_POPULATE_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ steps.create_pr.outputs.pull-request-number }}
+          HEAD_SHA: ${{ steps.create_pr.outputs.pull-request-head-sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::auto_merge is on but LABS_POPULATE_TOKEN is not set; leaving PR #$PR for manual review."
+            echo "merged=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          # Checks are registered a few seconds after the push; wait until
+          # the PR head is the commit we just pushed and has checks on it.
+          for _ in $(seq 1 30); do
+            head="$(gh pr view "$PR" --json headRefOid -q .headRefOid)"
+            n="$(gh pr view "$PR" --json statusCheckRollup -q '.statusCheckRollup | length')"
+            if [ "$head" = "$HEAD_SHA" ] && [ "$n" -gt 0 ]; then break; fi
+            sleep 10
+          done
+          if [ "$head" != "$HEAD_SHA" ] || [ "$n" -eq 0 ]; then
+            echo "::error::PR #$PR has no checks on $HEAD_SHA after 5 minutes; not merging unverified data."
+            exit 1
+          fi
+          # Exits non-zero if any check fails, which fails this job and
+          # leaves the PR open for a human.
+          gh pr checks "$PR" --watch --fail-fast --interval 15
+          # --match-head-commit: refuse to merge if the branch moved after
+          # the checks we just watched.
+          gh pr merge "$PR" --squash --delete-branch --match-head-commit "$HEAD_SHA"
+          echo "merged=true" >> "$GITHUB_OUTPUT"
+
       - name: Summary
         if: always()
         run: |
@@ -145,6 +212,11 @@ jobs:
             echo "### Changes Detected" >> $GITHUB_STEP_SUMMARY
             echo "- Services population completed" >> $GITHUB_STEP_SUMMARY
             echo "- Pull request created" >> $GITHUB_STEP_SUMMARY
+            if [ "${{ steps.auto_merge.outputs.merged }}" == "true" ]; then
+              echo "- Pull request auto-merged after checks passed" >> $GITHUB_STEP_SUMMARY
+            elif [ "${{ inputs.auto_merge }}" == "true" ]; then
+              echo "- Auto-merge was requested but the pull request was NOT merged - see the Auto-merge step" >> $GITHUB_STEP_SUMMARY
+            fi
           else
             echo "### No Changes" >> $GITHUB_STEP_SUMMARY
             echo "- Services population completed" >> $GITHUB_STEP_SUMMARY
