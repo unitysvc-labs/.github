@@ -103,21 +103,67 @@ jobs:
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_KEY }}
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_URL }}
         run: |
+          set -euo pipefail
+          # Retry transient transport failures. The backend sometimes drops
+          # the connection mid-upload on large catalogs ("Server disconnected
+          # without sending a response" — huggingface twice and ollama once on
+          # 2026-11-20, each fixed by a plain re-run). Since populate PRs can
+          # now auto-merge, nobody is watching this run, and a failure here
+          # leaves production stale until the next merge. Only connection-level
+          # errors are retried: a validation or auth failure is not going to
+          # pass on a second try and should fail fast. The upload is safe to
+          # repeat — it is the same command a manual re-run executes.
+          retry_transient() {
+            local attempt=1 max=4 delay=30 log rc
+            log="$(mktemp)"
+            while :; do
+              set +e
+              "$@" 2>&1 | tee "$log"
+              rc=${PIPESTATUS[0]}
+              set -e
+              [ "$rc" -eq 0 ] && return 0
+              if [ "$attempt" -ge "$max" ] || ! grep -qiE 'server disconnected|connection (reset|refused|closed|aborted|error)|connect(ion)? ?timeout|timed out|remoteprotocolerror|readerror|connecterror|(502|503|504) (bad gateway|service unavailable|gateway time-?out)' "$log"; then
+                return "$rc"
+              fi
+              echo "::warning::Attempt $attempt/$max failed with a transient connection error; retrying in ${delay}s."
+              sleep "$delay"
+              attempt=$((attempt+1)); delay=$((delay*2))
+            done
+          }
           echo "Uploading + submitting services to production..."
           # --submit folds the submit-for-review (validate -> pending -> run
           # tests) into the ingest task, so no separate submit step is needed.
           # Upload from the repository root so discovery includes both
           # services/specs/ and the sibling platform_services/ member-param
           # tree.
-          usvc_seller specs upload --submit
+          retry_transient usvc_seller specs upload --submit
 
       - name: Publish services
         env:
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_KEY }}
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_PRODUCTION_API_URL }}
         run: |
+          set -euo pipefail
+          # Same transient-failure retry as the upload step above.
+          retry_transient() {
+            local attempt=1 max=4 delay=30 log rc
+            log="$(mktemp)"
+            while :; do
+              set +e
+              "$@" 2>&1 | tee "$log"
+              rc=${PIPESTATUS[0]}
+              set -e
+              [ "$rc" -eq 0 ] && return 0
+              if [ "$attempt" -ge "$max" ] || ! grep -qiE 'server disconnected|connection (reset|refused|closed|aborted|error)|connect(ion)? ?timeout|timed out|remoteprotocolerror|readerror|connecterror|(502|503|504) (bad gateway|service unavailable|gateway time-?out)' "$log"; then
+                return "$rc"
+              fi
+              echo "::warning::Attempt $attempt/$max failed with a transient connection error; retrying in ${delay}s."
+              sleep "$delay"
+              attempt=$((attempt+1)); delay=$((delay*2))
+            done
+          }
           echo "Publishing services to make them visible in the catalog..."
-          usvc_seller services set-visibility public --local-ids --data-dir services/specs --yes
+          retry_transient usvc_seller services set-visibility public --local-ids --data-dir services/specs --yes
 
       - name: Upload summary
         if: always()
