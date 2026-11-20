@@ -25,9 +25,10 @@ on:
         description: >-
           Merge the generated PR without human review once its checks
           (Validate Data, Format Check) pass. Only for repos whose every
-          service is a BYOK LLM service — there the populate run can change
-          nothing the platform bills for. Repos with managed (seller-key)
-          channels, BYOE channels, or platform services must leave this off
+          service is a BYOK or BYOE LLM service (customer's own key or
+          endpoint) — there the populate run can change nothing the platform
+          bills for. Repos with managed (seller-key) channels or platform
+          services must leave this off
           so a human reviews prices and deprecations. NOTE: merging the PR
           fires the caller's "Upload Data to Production" workflow, so with
           this on, a populate run publishes to production unattended.
