@@ -24,6 +24,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import sync_dashboard as sd
 
@@ -39,6 +40,31 @@ def captured_stdout() -> "contextlib.AbstractContextManager[io.StringIO]":
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         yield buf
+
+
+class CatalogDiscoveryTests(unittest.TestCase):
+    def test_compute_catalog_is_discovered_with_provider_catalogs(self) -> None:
+        repos = [
+            {"name": "unitysvc-services-notify"},
+            {"name": "unitysvc-compute-services"},
+            {"name": "unitysvc-labs"},
+            {"name": ".github"},
+        ]
+        with patch.object(sd, "gh", return_value=json.dumps(repos)):
+            self.assertEqual(sd.list_services_repos(), repos[:2])
+
+    def test_old_ntfy_tracking_reference_follows_the_repo_rename(self) -> None:
+        issue = {"number": 1, "body": "Repo: `unitysvc-services-ntfy`"}
+        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"unitysvc-compute-services": issue})
+
+    def test_compute_catalog_can_be_referenced_directly(self) -> None:
+        issue = {"number": 1, "body": "Repo: `unitysvc-compute-services`"}
+        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"unitysvc-compute-services": issue})
+
+    def test_old_tracking_comment_follows_the_repo_rename(self) -> None:
+        issue = {"number": 1, "body": "ntfy"}
+        with patch.object(sd, "fetch_issue_comments", return_value=["Repo: `unitysvc-services-ntfy`"]):
+            self.assertEqual(sd.build_repo_to_issue_map([issue]), {"unitysvc-compute-services": issue})
 
 
 class ServiceIdDiscoveryTests(unittest.TestCase):

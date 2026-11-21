@@ -5,7 +5,8 @@ Reads from three sources and writes to two surfaces:
 Sources
 -------
 1. **GitHub** (via ``gh`` CLI) —
-   - public ``unitysvc-services-*`` repos in ``unitysvc-labs``
+   - public ``unitysvc-services-*`` repos and ``unitysvc-compute-services``
+     in ``unitysvc-labs``
    - tracking issues in ``unitysvc-labs/unitysvc-labs`` (one per repo)
      with ``status:`` / ``type:`` / ``reselling:`` labels
    - latest ``ci.yml`` workflow conclusion per repo
@@ -88,8 +89,10 @@ SECTION_START = "<!-- providers-start -->"
 SECTION_END = "<!-- providers-end -->"
 COMMENT_MARKER = "<!-- provider-status-sync -->"
 
-# Repo prefix that identifies a tracked services data repo.
+# Provider catalogs use the prefix; the compute catalog spans providers.
 REPO_PREFIX = "unitysvc-services-"
+ADDITIONAL_REPOS = {"unitysvc-compute-services": "Compute services"}
+REPO_RENAMES = {"unitysvc-services-ntfy": "unitysvc-compute-services"}
 
 
 @dataclass
@@ -135,7 +138,7 @@ def gh(*args: str) -> str:
 
 
 def list_services_repos() -> list[dict[str, Any]]:
-    """All ``unitysvc-services-*`` repos in the labs org, public or private."""
+    """Provider and compute catalogs in the labs org, public or private."""
     out = gh(
         "repo",
         "list",
@@ -146,7 +149,7 @@ def list_services_repos() -> list[dict[str, Any]]:
         "name,visibility,isArchived,description",
     )
     data = json.loads(out)
-    return [r for r in data if r["name"].startswith(REPO_PREFIX)]
+    return [r for r in data if r["name"].startswith(REPO_PREFIX) or r["name"] in ADDITIONAL_REPOS]
 
 
 def list_tracking_issues() -> list[dict[str, Any]]:
@@ -183,14 +186,15 @@ def fetch_issue_comments(issue_number: int) -> list[str]:
 
 
 def build_repo_to_issue_map(issues: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    """Match ``unitysvc-services-X`` repos to their tracking issues.
+    """Match service catalogs to their tracking issues, including renamed repos.
 
     The ``unitysvc-services-X`` reference may appear in the issue body
     (new-style issues created by this PR) or in a comment (older issues
     where I added a ``Repo:`` comment retroactively).  Both shapes use
     the same backtick-fenced repo name pattern.
     """
-    pattern = re.compile(rf"`({re.escape(REPO_PREFIX)}[A-Za-z0-9._-]+)`")
+    extra = "|".join(re.escape(name) for name in ADDITIONAL_REPOS)
+    pattern = re.compile(rf"`({re.escape(REPO_PREFIX)}[A-Za-z0-9._-]+|{extra})`")
     mapping: dict[str, dict[str, Any]] = {}
 
     for issue in issues:
@@ -200,7 +204,7 @@ def build_repo_to_issue_map(issues: list[dict[str, Any]]) -> dict[str, dict[str,
                 repos |= set(pattern.findall(comment_body))
         for repo in repos:
             # Earliest issue wins on ties (chronological stability).
-            mapping.setdefault(repo, issue)
+            mapping.setdefault(REPO_RENAMES.get(repo, repo), issue)
     return mapping
 
 
@@ -591,7 +595,7 @@ def collect_repo_metadata() -> list[RepoBaseMeta]:
                 is_public=r["visibility"] == "PUBLIC",
                 is_archived=r["isArchived"],
                 issue_number=(issue or {}).get("number"),
-                issue_title=(issue or {}).get("title") or repo_name[len(REPO_PREFIX) :],
+                issue_title=ADDITIONAL_REPOS.get(repo_name) or (issue or {}).get("title") or repo_name.removeprefix(REPO_PREFIX),
                 issue_type_labels=label_values(labels, "type"),
                 ci_conclusion=ci_conclusion,
                 open_pr_count=open_pr_count,
