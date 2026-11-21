@@ -43,9 +43,10 @@ def captured_stdout() -> "contextlib.AbstractContextManager[io.StringIO]":
 
 
 class CatalogDiscoveryTests(unittest.TestCase):
-    def test_compute_catalog_is_discovered_with_provider_catalogs(self) -> None:
+    def test_open_source_catalog_is_discovered_with_provider_catalogs(self) -> None:
         repos = [
             {"name": "unitysvc-services-notify"},
+            {"name": "open-source-catalog"},
             {"name": "unitysvc-compute-services"},
             {"name": "unitysvc-labs"},
             {"name": ".github"},
@@ -55,16 +56,25 @@ class CatalogDiscoveryTests(unittest.TestCase):
 
     def test_old_ntfy_tracking_reference_follows_the_repo_rename(self) -> None:
         issue = {"number": 1, "body": "Repo: `unitysvc-services-ntfy`"}
-        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"unitysvc-compute-services": issue})
+        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"open-source-catalog": issue})
 
-    def test_compute_catalog_can_be_referenced_directly(self) -> None:
+    def test_open_source_catalog_can_be_referenced_directly(self) -> None:
+        issue = {"number": 1, "body": "Repo: `open-source-catalog`"}
+        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"open-source-catalog": issue})
+
+    def test_old_compute_tracking_reference_follows_the_repo_rename(self) -> None:
         issue = {"number": 1, "body": "Repo: `unitysvc-compute-services`"}
-        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"unitysvc-compute-services": issue})
+        self.assertEqual(sd.build_repo_to_issue_map([issue]), {"open-source-catalog": issue})
 
     def test_old_tracking_comment_follows_the_repo_rename(self) -> None:
         issue = {"number": 1, "body": "ntfy"}
         with patch.object(sd, "fetch_issue_comments", return_value=["Repo: `unitysvc-services-ntfy`"]):
-            self.assertEqual(sd.build_repo_to_issue_map([issue]), {"unitysvc-compute-services": issue})
+            self.assertEqual(sd.build_repo_to_issue_map([issue]), {"open-source-catalog": issue})
+
+    def test_old_compute_tracking_comment_follows_the_repo_rename(self) -> None:
+        issue = {"number": 1, "body": "compute"}
+        with patch.object(sd, "fetch_issue_comments", return_value=["Repo: `unitysvc-compute-services`"]):
+            self.assertEqual(sd.build_repo_to_issue_map([issue]), {"open-source-catalog": issue})
 
 
 class ServiceIdDiscoveryTests(unittest.TestCase):

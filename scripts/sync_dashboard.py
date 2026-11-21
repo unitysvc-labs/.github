@@ -5,7 +5,7 @@ Reads from three sources and writes to two surfaces:
 Sources
 -------
 1. **GitHub** (via ``gh`` CLI) —
-   - public ``unitysvc-services-*`` repos and ``unitysvc-compute-services``
+   - public ``unitysvc-services-*`` repos and ``open-source-catalog``
      in ``unitysvc-labs``
    - tracking issues in ``unitysvc-labs/unitysvc-labs`` (one per repo)
      with ``status:`` / ``type:`` / ``reselling:`` labels
@@ -89,10 +89,13 @@ SECTION_START = "<!-- providers-start -->"
 SECTION_END = "<!-- providers-end -->"
 COMMENT_MARKER = "<!-- provider-status-sync -->"
 
-# Provider catalogs use the prefix; the compute catalog spans providers.
+# Provider catalogs use the prefix; the open-source catalog spans providers.
 REPO_PREFIX = "unitysvc-services-"
-ADDITIONAL_REPOS = {"unitysvc-compute-services": "Compute services"}
-REPO_RENAMES = {"unitysvc-services-ntfy": "unitysvc-compute-services"}
+ADDITIONAL_REPOS = {"open-source-catalog": "Open Source Catalog"}
+REPO_RENAMES = {
+    "unitysvc-services-ntfy": "open-source-catalog",
+    "unitysvc-compute-services": "open-source-catalog",
+}
 
 
 @dataclass
@@ -193,7 +196,8 @@ def build_repo_to_issue_map(issues: list[dict[str, Any]]) -> dict[str, dict[str,
     where I added a ``Repo:`` comment retroactively).  Both shapes use
     the same backtick-fenced repo name pattern.
     """
-    extra = "|".join(re.escape(name) for name in ADDITIONAL_REPOS)
+    known_catalogs = ADDITIONAL_REPOS.keys() | REPO_RENAMES.keys()
+    extra = "|".join(re.escape(name) for name in sorted(known_catalogs))
     pattern = re.compile(rf"`({re.escape(REPO_PREFIX)}[A-Za-z0-9._-]+|{extra})`")
     mapping: dict[str, dict[str, Any]] = {}
 
