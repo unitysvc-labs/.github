@@ -6,6 +6,7 @@ name: Upload Data to Staging (reusable)
 #     upload:
 #       permissions:
 #         contents: write   # needed to push override files back to main
+#         actions: read     # needed to find the previous upload state artifact
 #       uses: unitysvc-labs/.github/.github/workflows/seller-upload-staging.yml@main
 #       secrets: inherit
 #
@@ -16,6 +17,13 @@ name: Upload Data to Staging (reusable)
 
 on:
   workflow_call:
+    inputs:
+      full:
+        description: >-
+          Send every service, ignoring the saved upload state (the state is still
+          rewritten). Use for an occasional full resync.
+        type: boolean
+        default: false
 
 jobs:
   upload:
@@ -46,7 +54,9 @@ jobs:
           python -m pip install --upgrade pip
           # >=0.3.12: reads member-services/ (and platform-services/) — older
           # releases fail before uploading anything (unitysvc#2569).
-          pip install "unitysvc-sellers>=0.3.12"
+          # >=0.3.24: `specs upload --state` (skip services unchanged since
+          # their last ingest).
+          pip install "unitysvc-sellers>=0.3.24"
 
       - name: Seed seller-secrets store
         env:
@@ -106,8 +116,34 @@ jobs:
           done <<< "$names"
           echo "Seeded $seeded secret(s); $missing missing."
 
+      - name: Restore upload state
+        # The state file records, per service, what the last upload to this target
+        # sent, so an unchanged service is not ingested again. It is kept as a
+        # workflow artifact named for the target and is looked up repo-wide, newest
+        # first, whatever branch or event produced it: the state describes the
+        # target, not a branch, and a service whose content differs from the
+        # recorded fingerprint is sent again anyway. Needs `actions: read` from the
+        # caller. A missing, expired or unreadable artifact is not an error: every
+        # service is simply sent, as before.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p .upload-state
+          run_id="$(gh api "repos/$REPO/actions/artifacts?name=upload-state-staging&per_page=10" \
+            --jq '[.artifacts[] | select(.expired | not)][0].workflow_run.id // empty' 2>/dev/null || true)"
+          if [ -z "$run_id" ]; then
+            echo "No previous upload state for staging; every service will be sent."
+          elif gh run download "$run_id" --repo "$REPO" -n upload-state-staging -D .upload-state; then
+            echo "Restored upload state from run $run_id."
+          else
+            echo "::warning::Could not download the upload state of run $run_id; every service will be sent."
+            rm -f .upload-state/state.json
+          fi
+
       - name: Upload services
         env:
+          UPLOAD_FULL: ${{ inputs.full }}
           UNITYSVC_SELLER_API_KEY: ${{ secrets.UNITYSVC_SELLER_STAGING_API_KEY }}
           UNITYSVC_SELLER_API_URL: ${{ secrets.UNITYSVC_SELLER_STAGING_API_URL }}
         run: |
@@ -117,7 +153,18 @@ jobs:
           # Upload from the repository root so discovery includes both
           # services/specs/ and the sibling platform_services/ member-param
           # tree.
-          usvc_seller specs upload --submit
+          usvc_seller specs upload --submit --state "$GITHUB_WORKSPACE/.upload-state/state.json" $( [ "$UPLOAD_FULL" = "true" ] && echo --force )
+
+      - name: Save upload state
+        # Also after a failed upload: the state records which services were
+        # ingested, so the next run retries only the rest.
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: upload-state-staging
+          path: .upload-state/state.json
+          retention-days: 90
+          if-no-files-found: ignore
 
       - name: Commit back service_id sidecars
         run: |
